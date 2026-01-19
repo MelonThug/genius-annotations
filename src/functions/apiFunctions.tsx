@@ -2,7 +2,7 @@ import { config } from "../config";
 import { Annotation } from "../types/annotation";
 import { checkSongMatch, normalize } from "./parsingFunctions";
 
-async function searchSong({name, artist}: {name: string, artist:string}){
+async function searchSong(name: string, artist: string){
     const query = new URLSearchParams({q: `${artist} ${normalize(name)}`});
     const fullUrl = config.PROXY + `https://api.genius.com/search?${query.toString()}`
     const response = await fetch(fullUrl);
@@ -18,7 +18,7 @@ async function searchSong({name, artist}: {name: string, artist:string}){
     return hits;
 }
 
-async function getRawAnnotations({id}: {id: number}){
+async function getRawAnnotations(id: number){
     const geniusUrl = `?song_id=${id.toString()}&text_format=plain&per_page=50`
     const fullUrl = config.PROXY + `https://api.genius.com/referents${encodeURIComponent(geniusUrl)}`;
     const response = await fetch(fullUrl)
@@ -35,7 +35,7 @@ async function getRawAnnotations({id}: {id: number}){
     return annotations
 }
 
-async function getPreloadedState({id}: {id: number}){
+async function getPreloadedState(id: number){
     const fullUrl = config.PROXY + `https://genius.com/songs/${id.toString()}`;
     const request = await fetch(fullUrl);
     const response = await request.text();

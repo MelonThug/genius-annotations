@@ -11,7 +11,6 @@ function checkSongMatch(title: string, name: string, artist: string): boolean {
     );
 }
 
-
 function formatAnnotations(annotations: Annotation[]){
     for(const annotation of annotations){
         annotation.lyrics = normalizeQuotes(annotation.lyrics);
