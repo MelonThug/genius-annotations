@@ -1,0 +1,118 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 3em;
+  gap: 1em;
+  width: 100%; 
+}
+
+.title {
+  font-size: 25px;
+}
+
+.translation_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 1em;
+  text-overflow: ellipsis;
+  width: 100%;
+  max-width: 100%;
+}
+
+.translation_select {
+  width: 100%;           /* fills the container */
+  max-width: 100%;       /* prevents overflow */
+  padding: 0.3em;
+  font-size: 16px;
+  color: black;
+  background-color: white;
+  border-radius: 10px;
+  white-space: normal;   
+  cursor: pointer;
+}
+
+.translation_item {
+  text-overflow: ellipsis;
+}
+
+.annotation_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: white;
+  border-radius: 10px;
+  padding: 1em;
+  margin: 1em auto;
+  width: 70%;
+}
+
+.annotation_text {
+  font-size: 17px;
+  color: black;
+}
+
+.lyrics_container {
+  display: inline;
+  padding: 60px 100px 60px 100px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 1em;
+}
+
+.lyrics_text {
+  font-size: 20px;
+  white-space: pre-wrap;
+}
+
+.lyrics_text_annotated {
+  font-size: 20px;
+  background-color: hsl(97.73deg 100% 50%);
+  color: black;
+  white-space: pre-wrap;
+}
+
+.description_container {
+  display: flex;
+  gap: 1em;
+  padding: 1em;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: left;
+  border: 2px solid hsl(142deg 76% 48%);
+  border-radius: 10px;
+}
+
+.description_text {
+  font-size: 17px;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.hovered {
+  background-color: hsl(142deg 76% 58%);
+  transition: background-color;
+}
+
+.button {
+  padding: 7px 10px 7px 10px;
+  border-radius: 10px;
+  border:none;
+  color: black;
+  background-color: rgb(255, 255, 255);
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgb(243, 243, 243);
+  }
+
+  &:active {
+    background-color: rgb(228, 228, 228);
+  }
+}
