@@ -2,7 +2,15 @@
 Displays the current song's lyrics, annotations and description sourced from [Genius](https://genius.com)  
 Includes a list of available translations, as well as the link to the song page on Genius at the bottom of the lyrics.
 
-## Installation
+# Installation
+## Install Spicetify (if not installed already)
+1. Open Powershell
+2. Run:
+```
+iwr -useb https://raw.githubusercontent.com/spicetify/cli/main/install.ps1 | iex
+```
+
+## Install Custom App: 
 ### Automatic (Windows, Powershell)
 1. Open Powershell
 2. Run:
