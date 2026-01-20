@@ -85,7 +85,7 @@
   justify-content: center;
   flex-direction: column;
   text-align: left;
-  border: 2px solid hsl(142deg 76% 48%);
+  border: 2px solid hsl(142deg 76% 38%);
   border-radius: 10px;
 }
 
@@ -96,8 +96,7 @@
 }
 
 .hovered {
-  background-color: hsl(142deg 76% 58%);
-  transition: background-color;
+  background-color: hsl(142deg 76% 48%);
 }
 
 .button {
