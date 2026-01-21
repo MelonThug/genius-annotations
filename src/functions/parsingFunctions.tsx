@@ -5,10 +5,13 @@ function checkSongMatch(title: string, name: string, artist: string): boolean {
     const normalizedName = normalize(name);
     const normalizedArtist = normalize(artist);
 
-    return (
-      normalizedTitle.includes(normalizedName) &&
-      normalizedTitle.includes(normalizedArtist)
-    );
+    const nameWords = normalizedName.split(" ").filter(Boolean);
+    const artistWords = normalizedArtist.split(" ").filter(Boolean);
+
+    const nameMatches = nameWords.every(word => normalizedTitle.includes(word));
+    const artistMatches = artistWords.every(word => normalizedTitle.includes(word));
+
+    return nameMatches && artistMatches;
 }
 
 function formatAnnotations(annotations: Annotation[]){

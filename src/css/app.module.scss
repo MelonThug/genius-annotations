@@ -54,6 +54,8 @@
 .annotation_text {
   font-size: 17px;
   color: black;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .lyrics_text {
@@ -91,7 +93,7 @@
   justify-content: center;
   flex-direction: column;
   text-align: left;
-  border: 2px solid hsl(142deg 76% 38%);
+  border: 2px solid hsl(142deg 76% 48%);
   border-radius: 10px;
 }
 
@@ -122,3 +124,44 @@
   opacity: 0;
   pointer-events: none;
 }
+
+.config_input_text {
+  padding: 0.5em;
+  background-color: white;
+  border-radius: 10px;
+  width: 100%;
+}
+
+.config_container {
+  display:flex;
+  gap: 1em;
+  flex-direction: column;
+  user-select: text;
+}
+
+.config_row_container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 1em;
+}
+
+.config_button {
+  padding: 7px 10px 7px 10px;
+  border-radius: 10px;
+  border:none;
+  color: black;
+  background-color: hsl(97.73deg 100% 50%);
+  cursor: pointer;
+  width: fit-content;
+}
+
+.config_button:hover{
+  background-color: hsl(142deg 76% 48%);
+}
+
+.config_text_label {
+  font-size: 20px;
+}
+
+

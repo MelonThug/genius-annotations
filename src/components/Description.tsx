@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import styles from '../css/app.module.scss'
-import { config } from '../config';
+import { config } from '../configDefaults';
 
 export default function Description({text}: {text: string}){
     const [isExpanded, setIsExpanded] = useState(false);
