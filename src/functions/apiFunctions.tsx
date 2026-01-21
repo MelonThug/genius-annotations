@@ -1,5 +1,5 @@
 import { Annotation } from "../types/annotation";
-import { checkSongMatch, normalize } from "./parsingFunctions";
+import { checkSongMatch, normalize, parseJSStringLiteralJSON } from "./parsingFunctions";
 
 async function searchSong(name: string, artist: string){
     const query = new URLSearchParams({q: `${artist} ${normalize(name)}`});
@@ -27,14 +27,15 @@ async function searchSong(name: string, artist: string){
             }
         }
     } catch (e) {
-        console.error(`[Genius-Annotations] Fetch failed for ${fullUrl}`, e);
+        console.error(`[Genius-Annotations] Error searching song for ${fullUrl}`, e);
     }
     return hits;
 }
 
 async function getRawAnnotations(id: number){
     const geniusUrl = `?song_id=${id.toString()}&text_format=plain&per_page=50`
-    const fullUrl = Spicetify.LocalStorage.get("genius-annotations-proxy") + `https://api.genius.com/referents${encodeURIComponent(geniusUrl)}`;
+    const proxy = Spicetify.LocalStorage.get("genius-annotations-proxy");
+    const fullUrl = proxy + `https://api.genius.com/referents${encodeURIComponent(geniusUrl)}`;
     let annotations: Annotation[] = [];
 
     try {
@@ -58,14 +59,15 @@ async function getRawAnnotations(id: number){
             annotations.push({id: annotationID, lyrics: annotationLyric, text: annotationText});
         }
     } catch (e) {
-        console.error(`[Genius-Annotations] Fetch failed for ${fullUrl}`, e);
+        console.error(`[Genius-Annotations] Error getting annotations for ${fullUrl}`, e);
     }
     
     return annotations
 }
 
 async function getPreloadedState(id: number){
-    const fullUrl = Spicetify.LocalStorage.get("genius-annotations-proxy") + `https://genius.com/songs/${id.toString()}`;
+    const proxy = Spicetify.LocalStorage.get("genius-annotations-proxy")
+    const fullUrl = proxy + `https://genius.com/songs/${id.toString()}`;
 
     try {
         const response = await fetch(fullUrl)
@@ -75,7 +77,6 @@ async function getPreloadedState(id: number){
         }
 
         const data = await response.text();
-
         if (!data) {
             console.warn(`[Genius-Annotations] Unexpected response for ${fullUrl}`, data);
             return
@@ -84,18 +85,22 @@ async function getPreloadedState(id: number){
         const match = data.match(
           /window\.__PRELOADED_STATE__\s*=\s*JSON\.parse\(\s*('(?:\\.|[^'])*')\s*\);/
         );
+
         if(!match) {
             console.warn(`[Genius-Annotations] Failed to find lyric data for ${fullUrl}`); 
             return
         }
 
-        const jsStringLiteral = match[1];
-        const jsonString = Function(`"use strict"; return ${jsStringLiteral};`)();
+        let jsStringLiteral = match[1];
+        const jsonString = parseJSStringLiteralJSON(jsStringLiteral);
+        console.log(jsonString);
         const preloadedState = JSON.parse(jsonString);
+        console.log(preloadedState);
         return preloadedState;
     } catch (e) {
-        console.error(`[Genius-Annotations] Fetch failed for ${fullUrl}`, e);
+        console.error(`[Genius-Annotations] Error getting song data for ${fullUrl}`, e);
     }
 }
+
 
 export {searchSong, getPreloadedState, getRawAnnotations}
