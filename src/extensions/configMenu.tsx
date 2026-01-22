@@ -144,7 +144,7 @@ function injectStylesheet(){
 }
 
 async function checkForUpdates(){
-    const repo = "aamiryatali/genius-annotations";
+    const repo = "MelonThug/genius-annotations";
     const response = await fetch(`https://api.github.com/repos/${repo}/releases/latest`);
     const data = await response.json();
     const latestVersion = data.tag_name;

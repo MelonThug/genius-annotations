@@ -1,6 +1,6 @@
 $ErrorActionPreference = "Stop"
 
-$repo = "aamiryatali/genius-annotations"
+$repo = "MelonThug/genius-annotations"
 $customAppsDir = "$env:APPDATA\spicetify\CustomApps"
 $targetDir = "$customAppsDir\genius-annotations"
 $zip = "$env:TEMP\genius-annotations.zip"

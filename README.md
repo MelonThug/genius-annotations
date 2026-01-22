@@ -9,7 +9,7 @@ Requires [Spicetify](https://spicetify.app/) installed to use.
 1. Open Powershell
 2. Run:
 ```
-iwr -useb "https://raw.githubusercontent.com/aamiryatali/genius-annotations/refs/heads/main/install.ps1" | iex
+iwr -useb "https://raw.githubusercontent.com/MelonThug/genius-annotations/refs/heads/main/install.ps1" | iex
 ```
 
 ### Manual
