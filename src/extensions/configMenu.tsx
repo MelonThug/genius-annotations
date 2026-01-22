@@ -75,7 +75,7 @@ function ConfigPanel({versionInfoParam}: {versionInfoParam: VersionInfo}){
             <p className={styles.config_text_label}>Proxy URL</p>
             <sub>The proxy URL used to bypass CORS. Default: 
                 <br></br>
-                <code>https://spicetify-proxy.melonthugmydude.workers.dev/?url=</code>
+                <code>{config.PROXY}</code>
             </sub>
             <input 
             type="text" 

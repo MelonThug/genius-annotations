@@ -5,7 +5,7 @@ $customAppsDir = "$env:APPDATA\spicetify\CustomApps"
 $targetDir = "$customAppsDir\genius-annotations"
 $zip = "$env:TEMP\genius-annotations.zip"
 $tempDir = "$env:TEMP\genius-annotations"
-$updating = false
+$updating = $false
 
 try {
   if (-not (Test-Path $customAppsDir )) {
@@ -17,7 +17,7 @@ try {
   $releaseUrl = $latestRelease.assets[0].browser_download_url
   $tagName = $latestRelease.tag_name
 
-  Write-Host "Downloading genius-annotations v$tagName..."
+  Write-Host "Downloading genius-annotations $tagName..."
   Invoke-WebRequest -Uri $releaseUrl -OutFile $zip -ErrorAction Stop
   Expand-Archive -Path $zip -DestinationPath $tempDir -Force
 
@@ -25,7 +25,7 @@ try {
     Write-Host "Warning " -ForegroundColor DarkYellow -NoNewline
     Write-Host "`"$targetDir`" Found existing install. Removing..."
     Remove-Item -Path "$targetDir\*" -Recurse -Force
-    $updating = true
+    $updating = $true
   }
 
   Move-Item -Path "$tempDir\*" -Destination $targetDir -Force
@@ -36,9 +36,9 @@ try {
 
   Write-Host "success " -ForegroundColor DarkGreen -NoNewline
   if($updating) {
-    Write-Host "genius-annotations successfully updated to v$tagName!"
+    Write-Host "genius-annotations successfully updated to $tagName!"
   } else {
-    Write-Host "genius-annotations v$tagName installation complete!"
+    Write-Host "genius-annotations $tagName installation complete!"
   }
 
 } catch {

@@ -39,5 +39,5 @@ Lyrics with annotations will be highlighted green. Click them to see the annotat
 ## Updating
 Copy and run the powershell command from the app's config panel.  
 The app will automatically check for updates on launch.  
-<img src="resources/configLocation.png" width="500"/>
+<img src="resources/configLocation.png" width="500"/>  
 <img src="resources/configPreview.png" width="500" height="500">
