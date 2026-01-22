@@ -3,6 +3,16 @@ Displays the current song's lyrics, annotations and description sourced from [Ge
 Includes a list of available translations, as well as the link to the song page on Genius at the bottom of the lyrics.  
 Requires [Spicetify](https://spicetify.app/) installed to use.
 
+## Main features:
+- Song lyrics
+- Song descriptions
+- Annotations on lyrics
+- Lyric translations
+- 1 command install
+- Automatic update checking with subtle notification (includes copyable install command)
+- Caching on both the client and default supplied proxy for faster song lookups and reduced network requests.
+*Features subject to availability on Genius*  
+
 ## Installation
 
 ### Automatic (Windows, Powershell)
