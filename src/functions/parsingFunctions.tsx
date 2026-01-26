@@ -62,6 +62,19 @@ function getDescription(preloadedState: any){
     return description;
 }
 
+function getTextFromNode(node: Node): string {
+    if (node.nodeType === Node.TEXT_NODE) {
+        return node.textContent?.trim() ?? "";
+
+    } else if(node.nodeName === "BR") {
+        return "\n ";
+
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+        return Array.from(node.childNodes).map(getTextFromNode).join("");
+    }
+    return "";
+}
+
 function extractLyrics(lyricsData: Element){
     let lyrics: string[] = [];
     let lyricsBegan = false;
@@ -76,25 +89,14 @@ function extractLyrics(lyricsData: Element){
         }
 
         if(node.nodeType === Node.TEXT_NODE) {
-            node.textContent && lyrics.push(node.textContent.trim());
-        }
+            if(node.textContent) lyrics.push(node.textContent.trim());
 
-        if(node.nodeName === "BR" && lyricsBegan) {
+        } else if(node.nodeName === "BR" && lyricsBegan) {
             lyrics.push("\n");
-        }
 
-        if(node.nodeName === "A") {
-            let lyric = "";
-            for(const childNode of node.childNodes){
-                if (childNode.nodeType == Node.TEXT_NODE){
-                    if(childNode.textContent) lyric += childNode.textContent.trim();
-
-                } else if(childNode.nodeName === "BR") {
-                    lyric += "\n ";
-                }
-            }
-            lyrics.push(lyric.trim());
-            continue;
+        } else if(node.nodeType === Node.ELEMENT_NODE) {
+            const text = getTextFromNode(node);
+            if (text) lyrics.push(text.trim());
         }
     }
     return lyrics;
