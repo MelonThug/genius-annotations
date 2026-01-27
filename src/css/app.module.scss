@@ -1,17 +1,4 @@
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  padding: 3em;
-  gap: 1em;
-  width: 100%; 
-}
-
-.title {
-  font-size: 25px;
-}
-
+// Lyrics styles
 .translation_container {
   display: flex;
   justify-content: center;
@@ -106,28 +93,9 @@
   margin: 0;
 }
 
-.button {
-  padding: 7px 10px 7px 10px;
-  border-radius: 10px;
-  border:none;
-  color: black;
-  background-color: rgb(255, 255, 255);
-  cursor: pointer;
 
-  &:hover {
-    background-color: rgb(243, 243, 243);
-  }
 
-  &:active {
-    background-color: rgb(228, 228, 228);
-  }
-}
-
-.disabled {
-  opacity: 0;
-  pointer-events: none;
-}
-
+// Config styles
 .config_input_text {
   padding: 0.5em;
   background-color: white;
@@ -146,10 +114,6 @@
   justify-content: flex-start;
   flex-direction: column;
   gap: 1em;
-}
-
-.row {
-  flex-direction: row;
 }
 
 .config_button {
@@ -176,6 +140,67 @@
   margin: 0;
   padding: 0;
   flex-direction: column;
+}
+
+.changelog {
+  ul {
+    list-style: disc;
+    padding-left: 1.25rem;
+    margin: 0.5rem 0;
+  }
+
+  li {
+    display: list-item;
+    margin-bottom: 0.4rem;
+  }
+
+  code {
+    background: rgba(255,255,255,0.08);
+    padding: 0.15rem 0.3rem;
+    border-radius: 4px;
+    font-family: monospace;
+  }
+}
+
+// Misc styles
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 3em;
+  gap: 1em;
+  width: 100%; 
+}
+
+.title {
+  font-size: 25px;
+}
+
+.button {
+  padding: 7px 10px 7px 10px;
+  border-radius: 10px;
+  border:none;
+  color: black;
+  background-color: rgb(255, 255, 255);
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgb(243, 243, 243);
+  }
+
+  &:active {
+    background-color: rgb(228, 228, 228);
+  }
+}
+
+.disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.row {
+  flex-direction: row;
 }
 
 

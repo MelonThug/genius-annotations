@@ -1,7 +1,7 @@
 import { openDB } from "idb";
 import { config } from "../configDefaults";
 
-export const dbPromise = openDB('genius-annotations-cache', 1, {
+export const dbPromise = openDB('genius-annotations-cache-v2', 1, {
     upgrade(db) {
         if(!db.objectStoreNames.contains('tracks')) {
             db.createObjectStore('tracks', {keyPath: 'uri'})
@@ -83,7 +83,7 @@ export async function calcCacheSize(){
         }
     }
 
-    return (total/1024).toFixed(2);
+    return Number((total/1024).toFixed(2));
 }
 
 export function approximateSize(obj: any): number {
