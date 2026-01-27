@@ -1,137 +1,28 @@
 import { config } from '../configDefaults';
 import styles from '../css/app.module.scss'
-import { calcCacheSize, cleanupCache, clearCache, getCacheStats } from './caching';
+import { VersionInfo } from '../types/versionInfo';
+import { cleanupCache } from './caching';
+import UpdateSection from '../components/config/UpdateSection';
+import ProxySection from '../components/config/ProxySection';
+import CacheSection from '../components/config/CacheSection';
+import SaveSection from '../components/config/SaveSection';
 const { React, ReactDOM } = Spicetify;
 const { useState, useEffect } = React;
 
-type VersionInfo = {
-  isOutdated: boolean;
-  latestVersion: string;
-  downloadUrl: string;
-};
-
 function ConfigPanel({versionInfoParam}: {versionInfoParam: VersionInfo}){
-    const [checkedForUpdates, setCheckedForUpdates] = useState(false);
-    const [versionInfo, setVersionInfo] = useState(versionInfoParam);
-    const [copiedCommand, setCopiedCommand] = useState(false);
-    const [clearedCache, setClearedCache] = useState(false);
-    const [cacheStats, setCacheStats] = useState({songs: 0, tracks: 0});
-    const [cacheSize, setCacheSize] = useState(-1);
     const [proxyUrl, setProxyUrl] = useState(() => {
         const proxy = Spicetify.LocalStorage.get("genius-annotations-proxy")
         if(proxy === null) Spicetify.LocalStorage.set("genius-annotations-proxy", config.PROXY);
+
         return proxy !== null ? proxy : config.PROXY;
     });
 
-    useEffect(() => {
-      async function fetchCacheStats() {
-        const stats = await getCacheStats();
-        setCacheStats(stats);
-      }
-
-      fetchCacheStats();
-    }, [])
-
     return (
     <><div className={styles.config_container_main}>
-        <div className={styles.config_container}>
-            <p className={styles.config_text_label}>Check for updates</p>
-            
-            {versionInfo.isOutdated ?
-            <>
-            <sub>Update available! Powershell install command:</sub>
-            <code>{config.INSTALL_COMMAND}</code>
-            </> : checkedForUpdates && <sub>No new updates found</sub>
-            }
-
-            <div className={`${styles.config_container} ${styles.row}`}>
-                <button 
-                className={styles.config_button}
-                onClick={async () => {
-                    setVersionInfo(await checkForUpdates());
-                    setCheckedForUpdates(true);
-                }}>
-                Check for updates
-                </button>
-
-                {versionInfo.isOutdated ? 
-                <button
-                className={styles.config_button}
-                onClick={() => {
-                    Spicetify.Platform.ClipboardAPI.copy(config.INSTALL_COMMAND)
-                    setCopiedCommand(true);
-                    setTimeout(() => setCopiedCommand(false), 2000)
-                }}>
-                Copy Install Command
-                </button>
-                : ""
-                }
-            </div>
-
-            {copiedCommand && <sub>Copied install command to clipboard!</sub>}
-        </div> 
-
-        <div className={styles.config_container}>
-            <p className={styles.config_text_label}>Proxy URL</p>
-            <sub>The proxy URL used to bypass CORS. Default: 
-                <br></br>
-                <code>{config.PROXY}</code>
-            </sub>
-            <input 
-            type="text" 
-            className={styles.config_input_text}
-            id="config-proxy-url" 
-            value={proxyUrl}
-            onChange={(e) => {setProxyUrl(e.target.value)}}
-            />
-        </div>
-
-        <div className={styles.config_container}>
-            <p className={styles.config_text_label}>Cache</p>
-            <sub>Data for frequently viewed songs are cached for faster retrieval and reduced API requests.</sub>
-            <sub>Songs cached: <code>{cacheStats.songs || 0}</code></sub>
-            <sub>Track references: <code>{cacheStats.tracks || 0}</code></sub>
-
-            {cacheSize !== -1 ? 
-            <sub>Cache size: <code>  ~{cacheSize}Kb</code></sub>
-            : ""}
-
-            <div className={`${styles.config_container} ${styles.row}`}>
-                <button
-                className={styles.config_button}
-                onClick={async () => {
-                    setCacheSize(await calcCacheSize());
-                }}>
-                Calculate Size
-                </button>
-                <button
-                className={styles.config_button}
-                onClick={async () => {
-                    clearCache();
-                    setClearedCache(true);
-                    setCacheSize(await calcCacheSize());
-                    setCacheStats(getCacheStats());
-                    setTimeout(() => setClearedCache(false), 2000)
-                }}>
-                Clear Cache
-                </button>
-            </div>
-
-            {clearedCache && <sub>Cleared cache!</sub>}
-        </div>
-
-        <div className={`${styles.config_container} ${styles.row}`}>
-                <button 
-                className={styles.config_button} 
-                style={{backgroundColor: "hsl(142deg 76% 48%)"}} 
-                onClick={() => {
-                    Spicetify.LocalStorage.set("genius-annotations-proxy", proxyUrl);
-                    Spicetify.showNotification("Config saved!");
-                    Spicetify.PopupModal.hide()
-                }}>
-                Save Config
-                </button>
-        </div>
+        <UpdateSection versionInfoParam={versionInfoParam} checkForUpdates={checkForUpdates}></UpdateSection>
+        <ProxySection proxyUrl={proxyUrl} setProxyUrl={setProxyUrl}></ProxySection>
+        <CacheSection></CacheSection>
+        <SaveSection proxyUrl={proxyUrl}></SaveSection>
     </div></>
     )
 }
@@ -147,11 +38,14 @@ async function checkForUpdates(){
     const repo = "MelonThug/genius-annotations";
     const response = await fetch(`https://api.github.com/repos/${repo}/releases/latest`);
     const data = await response.json();
-    const latestVersion = data.tag_name;
 
-    const isOutdated = latestVersion !== config.VERSION
+    let versionInfo = {} as VersionInfo;
+    versionInfo.latestVersion = data.tag_name;
+    versionInfo.isOutdated = versionInfo.latestVersion !== config.VERSION
+    versionInfo.downloadUrl = data.assets[0].browser_download_url
+    versionInfo.changelog = data.body;
 
-    return { isOutdated, latestVersion, downloadUrl: data.assets[0].browser_download_url}
+    return versionInfo
 }
 
 function openConfigMenu(versionInfo: VersionInfo){
