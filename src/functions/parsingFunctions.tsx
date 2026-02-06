@@ -1,5 +1,6 @@
 import { Annotation } from "../types/annotation";
 import { NORMALIZE_RULES } from "../types/normalizeRule";
+import { config } from "../configDefaults";
 import Fuse from "fuse.js"
 
 function checkSongMatch(title: string, name: string, artist: string): boolean {
@@ -74,6 +75,21 @@ function getDescription(preloadedState: any){
     return description;
 }
 
+function getTranslations(id: number, preloadedState: any){
+    const translationMap = new Map<string, number>();
+    if(!preloadedState) return translationMap;
+    
+    const translationKeys = [id, ...preloadedState.entities.songs[id].translationSongs];
+    translationKeys.sort();
+    
+    for(const key of translationKeys){
+        const songLanguage = preloadedState.entities.songs[key].language as keyof typeof config.GENIUS_LANGUAGE_MAP;
+        translationMap.set(config.GENIUS_LANGUAGE_MAP[songLanguage], key);
+    }
+
+    return translationMap;
+}
+
 function getTextFromNode(node: Node): string {
     if (node.nodeType === Node.TEXT_NODE) {
         return node.textContent?.trim() ?? "";
@@ -141,4 +157,4 @@ function parseJSStringLiteralJSON(jsStringLiteral: String){
     return jsonString;
 }
 
-export { extractLyrics, formatAnnotations, formatLyrics, getRawLyrics, getDescription, checkSongMatch, normalize, parseJSStringLiteralJSON}
+export { extractLyrics, formatAnnotations, formatLyrics, getRawLyrics, getDescription, getTranslations, checkSongMatch, normalize, parseJSStringLiteralJSON}

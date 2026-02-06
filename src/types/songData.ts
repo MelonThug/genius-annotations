@@ -5,7 +5,8 @@ type SongData = {
     lyrics: Map<number, string>|null,
     description: string,
     annotations: Map<string, Annotation>|null,
-    url: string|null
+    url: string|null,
+    translations: Map<string, number>
 }
 
 export { SongData }

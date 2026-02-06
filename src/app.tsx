@@ -113,7 +113,7 @@ const App: React.FC = () => {
     	) : songData && loadingPipeline.status === "ready" ? 
 		(
 			<div className={styles.container}>
-				<TranslationSelect searchHits={searchHits} selectedSongId={songId} setSelectedSongId={setSongId}></TranslationSelect>
+				<TranslationSelect searchHits={searchHits} selectedSongId={songId} setSelectedSongId={setSongId} translations={songData.translations}></TranslationSelect>
   			  	<Description text={songData.description}></Description>
   			  	<Lyrics lyrics={songData.lyrics} annotations={songData.annotations}></Lyrics>
 				<Footer url={songData.url}></Footer>
