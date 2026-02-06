@@ -1,17 +1,25 @@
 import { Annotation } from "../types/annotation";
+import { NORMALIZE_RULES } from "../types/normalizeRule";
+import Fuse from "fuse.js"
 
 function checkSongMatch(title: string, name: string, artist: string): boolean {
     const normalizedTitle = normalize(title);
     const normalizedName = normalize(name);
     const normalizedArtist = normalize(artist);
 
-    const nameWords = normalizedName.split(" ").filter(Boolean);
-    const artistWords = normalizedArtist.split(" ").filter(Boolean);
+    const fuse = new Fuse([normalizedTitle], {
+        includeScore: true,
+        threshold: 0.35,
+        ignoreLocation: true
+    });
 
-    const nameMatches = nameWords.every(word => normalizedTitle.includes(word));
-    const artistMatches = artistWords.every(word => normalizedTitle.includes(word));
+    const nameResult = fuse.search(normalizedName)[0];
+    const artistResult = fuse.search(normalizedArtist)[0];
 
-    return nameMatches && artistMatches;
+    const nameMatch = !!nameResult && (nameResult.score ?? 1) <= 0.35;
+    const artistMatch = !!artistResult && (artistResult.score ?? 1) <= 0.35;
+
+    return nameMatch && artistMatch;
 }
 
 function formatAnnotations(annotations: Annotation[]){
@@ -34,13 +42,17 @@ function normalizeQuotes(s: string) {
     return s.replace(/[‘’]/g, "'").replace(/[“”]/g, '"');
 }
 
-function normalize(string: string): string {
-    // Remove any (feat. …) or [feat. …] anywhere in the string, as well normalize saces
-    return string
-    .replace(/\s*[\(\[]\s*feat[^\)\]]*[\)\]]/gi, '')
-    .replace(/\u00A0/g, " ")
-    .replace(/[^\p{L}\p{N}\s]/gu, "")
-    .replace(/\s+/g, " ")
+function normalize(title: string): string {
+  let result = title;
+
+  for (const rule of NORMALIZE_RULES) {
+    result = result.replace(rule.pattern, rule.replace ?? "");
+  }
+
+  return result
+    .replace(/\u00A0/g, " ")                 // nbsp → space
+    .replace(/[^\p{L}\p{N}\s]/gu, "")        // strip punctuation
+    .replace(/\s+/g, " ")                    // collapse spaces
     .toLowerCase()
     .trim();
 }
