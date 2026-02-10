@@ -33,7 +33,7 @@ export default function Lyrics({lyrics, annotations}: {lyrics: Map<number, strin
                                 annotation && setSelectedAnnotation({annotationId: annotation?.id, lyricIndex: lyricIndex})}
                             }
                             >
-                                {line}
+                                {line + ' '}
                             </span>
 
                             {selectedAnnotation?.annotationId === annotation?.id && 

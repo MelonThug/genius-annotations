@@ -8,6 +8,7 @@ export const config = {
     "TRACK_CACHE_TTL": 259200000, // 3 days
     "SEARCH_CACHE_TTL": 86400000, // 1 day
     "TRACK_CACHE_THRESHOLD": 3,
+    "SONG_MATCH_THRESHOLD": 0.75,
     "GENIUS_LANGUAGE_MAP": {
         "aa": "Afar",
         "ab": "Аҧсуа",

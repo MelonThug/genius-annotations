@@ -3,24 +3,34 @@ import { NORMALIZE_RULES } from "../types/normalizeRule";
 import { config } from "../configDefaults";
 import Fuse from "fuse.js"
 
-function checkSongMatch(title: string, name: string, artist: string): boolean {
-    const normalizedTitle = normalize(title);
-    const normalizedName = normalize(name);
-    const normalizedArtist = normalize(artist);
-
-    const fuse = new Fuse([normalizedTitle], {
-        includeScore: true,
+function checkSongMatch(geniusTitle: string, spotifyName: string, spotifyArtist: string): boolean {
+    const geniusWords = geniusTitle.split(' ');
+    const titleFuse = new Fuse(geniusWords, {
         threshold: 0.35,
-        ignoreLocation: true
+        distance: 10
     });
 
-    const nameResult = fuse.search(normalizedName)[0];
-    const artistResult = fuse.search(normalizedArtist)[0];
+    const artistMatch = titleFuse.search(spotifyArtist).length > 0 || geniusTitle.includes(spotifyArtist);
+    if (!artistMatch) return false;
 
-    const nameMatch = !!nameResult && (nameResult.score ?? 1) <= 0.35;
-    const artistMatch = !!artistResult && (artistResult.score ?? 1) <= 0.35;
+    const nameTokens = spotifyName.split(' ').filter(t => t.length > 1);
+    let matchedCount = 0;
 
-    return nameMatch && artistMatch;
+    for (const token of nameTokens) {
+        if (geniusTitle.includes(token)) {
+            matchedCount++;
+            continue;
+        }
+        
+        // Fallback to fuzzy match if word fails
+        const fuzzyResult = titleFuse.search(token);
+        if (fuzzyResult.length > 0) {
+            matchedCount++;
+        }
+    }
+
+    const score = matchedCount / nameTokens.length;
+    return score >= config.SONG_MATCH_THRESHOLD;
 }
 
 function formatAnnotations(annotations: Annotation[]){

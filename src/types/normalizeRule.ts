@@ -29,6 +29,13 @@ const NORMALIZE_RULES: NormalizeRule[] = [
     replace: "",
   },
 
+  // ---------- ALT TITLE / DEMO ----------
+  {
+    name: "quoted alternate title demo/version",
+    pattern: /\s*\(\s*"[^"]+"\s+(demo|version|mix)\s*\)/gi,
+    replace: "",
+  },
+
   // ---------- CONTEXT / PROMOTIONAL NOISE ----------
   {
     name: "contextual suffix (featured in / soundtrack / film)",
@@ -36,7 +43,12 @@ const NORMALIZE_RULES: NormalizeRule[] = [
       /\s*-\s*(as featured in|from (the )?(motion picture|film)|original soundtrack|ost)\b.*$/gi,
     replace: "",
   },
-  
+  {
+    name: "b-side suffix",
+    pattern: /\s*-\s*.*\bb[- ]?side\b.*$/gi,
+    replace: "",
+  },
+
   // ---------- VERSION NOISE ----------
   {
     name: "remaster / remastered (any year)",
@@ -45,7 +57,7 @@ const NORMALIZE_RULES: NormalizeRule[] = [
   },
   {
     name: "live versions",
-    pattern: /\s*[-(]?\s*live\b.*$/gi,
+    pattern: /\s*[-(]\s*live\b[^\)]*\)?$/gi,
     replace: "",
   },
   {
@@ -55,7 +67,7 @@ const NORMALIZE_RULES: NormalizeRule[] = [
   },
   {
     name: "mono / stereo",
-    pattern: /\s*[-(]?\s*(mono|stereo)\b.*$/gi,
+    pattern: /\s*[-(]\s*(mono|stereo)\b[^\)]*\)?$/gi,
     replace: "",
   },
   {

@@ -22,8 +22,12 @@ async function fetchSongHits(name: string, artist: string, signal?: AbortSignal)
             return hits;
         }
 
+        const normalizedName = normalize(name)
+        const normalizedArtist = normalize(artist)
         for(const hit of data.response.hits){
-            if(checkSongMatch(hit.result.full_title, name, artist)) {
+            const normalizedTitle = normalize(hit.result.full_title)
+            
+            if(checkSongMatch(normalizedTitle, normalizedName, normalizedArtist)) {
                 hits.set(hit.result.id, hit.result.full_title);
             }
         }
