@@ -29,6 +29,14 @@ const NORMALIZE_RULES: NormalizeRule[] = [
     replace: "",
   },
 
+  // ---------- CONTEXT / PROMOTIONAL NOISE ----------
+  {
+    name: "contextual suffix (featured in / soundtrack / film)",
+    pattern:
+      /\s*-\s*(as featured in|from (the )?(motion picture|film)|original soundtrack|ost)\b.*$/gi,
+    replace: "",
+  },
+  
   // ---------- VERSION NOISE ----------
   {
     name: "remaster / remastered (any year)",

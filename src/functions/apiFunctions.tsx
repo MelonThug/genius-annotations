@@ -1,5 +1,6 @@
 import { Annotation } from "../types/annotation";
-import { checkSongMatch, normalize, parseJSStringLiteralJSON } from "./parsingFunctions";
+import { checkSongMatch, normalize } from "./parsingFunctions";
+import JSON5 from 'json5'
 
 async function fetchSongHits(name: string, artist: string, signal?: AbortSignal){
     const query = new URLSearchParams({q: `${artist} ${normalize(name)}`});
@@ -92,7 +93,7 @@ async function fetchPreloadedState(id: number, signal?: AbortSignal){
         }
 
         let jsStringLiteral = match[1];
-        const jsonString = parseJSStringLiteralJSON(jsStringLiteral);
+        const jsonString = JSON5.parse(jsStringLiteral);
         const preloadedState = JSON.parse(jsonString);
         return preloadedState;
         
@@ -100,6 +101,5 @@ async function fetchPreloadedState(id: number, signal?: AbortSignal){
         console.error(`[Genius-Annotations] Error getting song data for ${fullUrl}`, e);
     }
 }
-
 
 export {fetchSongHits, fetchPreloadedState, fetchRawAnnotations}
