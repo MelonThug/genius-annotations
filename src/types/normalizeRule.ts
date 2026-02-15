@@ -5,98 +5,36 @@ type NormalizeRule = {
 };
 
 const NORMALIZE_RULES: NormalizeRule[] = [
-  // ---------- FEATURE / COLLAB NOISE ----------
   {
-    name: "feat (parentheses or brackets)",
-    pattern: /\s*[\(\[]\s*feat[^\)\]]*[\)\]]/gi,
-    replace: "",
+    name: "metadata block purge",
+    pattern: /\s*[\(\[]\s*[^()\[\]]*?\b(feat\.?|ft\.?|featuring|with|remaster(?:ed)?|live|demo|version|remix|mix|edit|explicit|clean|anniversary|ost|soundtrack|edition|acoustic|original|pt\.?|part|bonus|deluxe|expanded|ep|b[- ]?side)\b[^()\[\]]*?[\]\)]/gi,
+    replace: ""
   },
   {
-    name: "feat / ft / featuring (dash form)",
-    pattern: /\s*-\s*(feat\.?|ft\.?|featuring)\b.*$/gi,
-    replace: "",
-  },
-
-  // ---------- WITH ----------
-  {
-    name: "with (parentheses or brackets)",
-    pattern: /\s*[\(\[]\s*with[^\)\]]*[\)\]]/gi,
-    replace: "",
+    name: "metadata separator purge",
+    pattern: /\s*[-–—/|]\s*.*\b(feat\.?|ft\.?|featuring|with|remaster(?:ed)?|live|demo|version|remix|mix|edit|explicit|clean|anniversary|ost|soundtrack|edition|acoustic|original|pt\.?|part|bonus|deluxe|expanded|as featured in|b[- ]?side|from the|ep|radio|special|extended|session)\b.*$/gi,
+    replace: ""
   },
   {
-    name: "with (dash form)",
-    pattern: /\s*-\s*with\b.*$/gi,
-    replace: "",
+    name: "year suffix purge",
+    pattern: /\s*[-–—]\s*\d{4}\s*([-–—].*)?$/gi,
+    replace: ""
   },
-
-  // ---------- ALT TITLE / DEMO ----------
-  {
-    name: "quoted alternate title demo/version",
-    pattern: /\s*\(\s*"[^"]+"\s+(demo|version|mix)\s*\)/gi,
-    replace: "",
-  },
-
-  // ---------- CONTEXT / PROMOTIONAL NOISE ----------
-  {
-    name: "contextual suffix (featured in / soundtrack / film)",
-    pattern:
-      /\s*-\s*(as featured in|from (the )?(motion picture|film)|original soundtrack|ost)\b.*$/gi,
-    replace: "",
-  },
-  {
-    name: "b-side suffix",
-    pattern: /\s*-\s*.*\bb[- ]?side\b.*$/gi,
-    replace: "",
-  },
-
-  // ---------- VERSION NOISE ----------
-  {
-    name: "remaster / remastered (any year)",
-    pattern: /\s*[-(]?\s*\d*\s*remaster(?:ed)?\s*\d*\)?/gi,
-    replace: "",
-  },
-  {
-    name: "live versions",
-    pattern: /\s*[-(]\s*live\b[^\)]*\)?$/gi,
-    replace: "",
-  },
-  {
-    name: "radio edit",
-    pattern: /\s*[-(]?\s*radio edit\b.*$/gi,
-    replace: "",
-  },
-  {
-    name: "mono / stereo",
-    pattern: /\s*[-(]\s*(mono|stereo)\b[^\)]*\)?$/gi,
-    replace: "",
-  },
-  {
-    name: "explicit / clean tags",
-    pattern: /\s*[-(]?\s*(explicit|clean)\b.*$/gi,
-    replace: "",
-  },
-  {
-    name: "bonus / deluxe / expanded",
-    pattern: /\s*[-(]?\s*(bonus track|deluxe|expanded edition)\b.*$/gi,
-    replace: "",
-  },
-
-  // ---------- STRUCTURAL NORMALIZATION ----------
   {
     name: "ampersand to and",
     pattern: /\s*&\s*/g,
     replace: " and ",
   },
   {
-    name: "normalize dash spacing",
-    pattern: /\s*[-–—]\s*/g,
+    name: "remove special characters",
+    pattern: /[^\p{L}\p{N}\s\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf'-]/gu,
     replace: " ",
   },
   {
-    name: "remove brackets but keep text",
-    pattern: /[\(\[]([^\)\]]+)[\)\]]/g,
-    replace: " $1 ",
-  },
+    name: "collapse whitespace",
+    pattern: /\s+/g,
+    replace: " ",
+  }
 ];
 
 export { NORMALIZE_RULES }

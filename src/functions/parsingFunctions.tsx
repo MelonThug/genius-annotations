@@ -4,6 +4,10 @@ import { config } from "../configDefaults";
 import Fuse from "fuse.js"
 
 function checkSongMatch(geniusTitle: string, spotifyName: string, spotifyArtist: string): boolean {
+    if (geniusTitle.includes(spotifyName) && geniusTitle.includes(spotifyArtist)) {
+        return true;
+    }
+
     const geniusWords = geniusTitle.split(' ');
     const titleFuse = new Fuse(geniusWords, {
         threshold: 0.35,
