@@ -1,5 +1,6 @@
 import { Annotation } from "../types/annotation";
-import { checkSongMatch, normalize, parseJSStringLiteralJSON } from "./parsingFunctions";
+import { checkSongMatch, normalize } from "./parsingFunctions";
+import JSON5 from 'json5'
 
 async function fetchSongHits(name: string, artist: string, signal?: AbortSignal){
     const query = new URLSearchParams({q: `${artist} ${normalize(name)}`});
@@ -21,8 +22,12 @@ async function fetchSongHits(name: string, artist: string, signal?: AbortSignal)
             return hits;
         }
 
+        const normalizedName = normalize(name)
+        const normalizedArtist = normalize(artist)
         for(const hit of data.response.hits){
-            if(checkSongMatch(hit.result.full_title, name, artist)) {
+            const normalizedTitle = normalize(hit.result.full_title)
+            
+            if(checkSongMatch(normalizedTitle, normalizedName, normalizedArtist)) {
                 hits.set(hit.result.id, hit.result.full_title);
             }
         }
@@ -92,7 +97,7 @@ async function fetchPreloadedState(id: number, signal?: AbortSignal){
         }
 
         let jsStringLiteral = match[1];
-        const jsonString = parseJSStringLiteralJSON(jsStringLiteral);
+        const jsonString = JSON5.parse(jsStringLiteral);
         const preloadedState = JSON.parse(jsonString);
         return preloadedState;
         
@@ -100,6 +105,5 @@ async function fetchPreloadedState(id: number, signal?: AbortSignal){
         console.error(`[Genius-Annotations] Error getting song data for ${fullUrl}`, e);
     }
 }
-
 
 export {fetchSongHits, fetchPreloadedState, fetchRawAnnotations}

@@ -8,9 +8,10 @@
   text-overflow: ellipsis;
   width: 100%;
   max-width: 100%;
+  gap: 1em;
 }
 
-.translation_select {
+.search_hit_select {
   width: 100%;
   max-width: 100%;
   padding: 0.3em;
@@ -22,8 +23,21 @@
   cursor: pointer;
 }
 
+.translation_select {
+  width: auto;
+  max-width: 100%;
+  padding: 0.3em;
+  font-size: 16px;
+  color: black;
+  background-color: white;
+  border-radius: 10px;
+  white-space: nowrap;   
+  cursor: pointer;
+}
+
 .translation_item {
   text-overflow: ellipsis;
+  
 }
 
 .annotation_container {
@@ -54,6 +68,14 @@
 .lyrics_text_annotated {
   font-size: 20px;
   background-color: hsl(97.73deg 100% 50%);
+  color: black;
+  white-space: pre-wrap;
+  padding: 0.1px;
+}
+
+.lyrics_text_selected {
+  font-size: 20px;
+  background-color: hsl(142deg 76% 48%);
   color: black;
   white-space: pre-wrap;
   padding: 0.1px;

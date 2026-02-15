@@ -1,7 +1,5 @@
-import { Annotation } from "../types/annotation";
 import { config } from "../configDefaults";
 import { dbPromise } from "../extensions/caching";
-import { approximateSize } from "../extensions/caching";
 import { SongData } from "../types/songData";
 
 export async function cacheTrack(uri: string, playCount: number = 0){
@@ -17,6 +15,7 @@ export async function cacheSong(data: SongData){
         annotations: data.annotations ?? null,
         description: data.description ?? "",
         url: data.url ?? null,
+        translations: data.translations,
         cachedAt: Date.now()
     });
 }

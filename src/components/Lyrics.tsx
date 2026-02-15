@@ -4,7 +4,7 @@ import { Annotation } from '../types/annotation';
 
 export default function Lyrics({lyrics, annotations}: {lyrics: Map<number, string>|null, annotations: Map<string, Annotation>|null}){
     const [hoveredAnnotationId, setHoveredAnnotationId] = useState<number | null>(null);
-    const [selectedAnnotation, setSelectedAnnotation] = useState<{annotationId: number, lyricIndex: number} | null>();
+    const [selectedAnnotation, setSelectedAnnotation] = useState<{annotationId: number, lyricIndex: number} | null>(null);
     if(!lyrics || lyrics?.size === 0) return;
 
     return (
@@ -16,28 +16,36 @@ export default function Lyrics({lyrics, annotations}: {lyrics: Map<number, strin
 
                     const normalized = line.toLowerCase();
                     const annotation = new Map<string, Annotation>(annotations).get(normalized);
+                    const isAnnotated = !!annotation;
+                    const isSelected = isAnnotated && selectedAnnotation?.annotationId === annotation.id && selectedAnnotation?.lyricIndex === lyricIndex;
+                    const className = isAnnotated ? isSelected ? styles.lyrics_text_selected : styles.lyrics_text_annotated : styles.lyrics_text;
+
                     return (
                         <>
                             <span
                             className=
                             {`
-                            ${annotation ? styles.lyrics_text_annotated : styles.lyrics_text}
+                            ${className}
                             `}
                             data-annotation-id={annotation?.id}
                             data-lyricIndex={lyricIndex} 
                             onMouseEnter={() => annotation && setHoveredAnnotationId(annotation.id)}
                             onMouseLeave={() => setHoveredAnnotationId(null)}
                             onClick={(e) => {
-                                e.stopPropagation();
-                                annotation?.id === selectedAnnotation?.annotationId ? setSelectedAnnotation(null) :
-                                annotation && setSelectedAnnotation({annotationId: annotation?.id, lyricIndex: lyricIndex})}
+                                    e.stopPropagation();
+                                    const isAlreadySelected = selectedAnnotation?.annotationId === annotation?.id && selectedAnnotation?.lyricIndex === lyricIndex;
+                                    if(isAlreadySelected){
+                                        setSelectedAnnotation(null)
+                                    } else if(annotation){
+                                        setSelectedAnnotation({annotationId: annotation?.id, lyricIndex: lyricIndex})
+                                    }
+                                }
                             }
                             >
-                                {line}
+                                {line + ' '}
                             </span>
 
-                            {selectedAnnotation?.annotationId === annotation?.id && 
-                            selectedAnnotation?.lyricIndex === lyricIndex && 
+                            {isSelected && 
                             (
                                 <div className={styles.annotation_container}>
                                     <p className={styles.annotation_text}>{annotation?.text}</p>

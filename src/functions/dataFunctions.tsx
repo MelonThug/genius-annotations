@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { formatAnnotations, formatLyrics, getDescription, getRawLyrics, normalize } from "./parsingFunctions";
+import { formatAnnotations, formatLyrics, getDescription, getRawLyrics, getTranslations, normalize } from "./parsingFunctions";
 import { cacheSearchHits, cacheSong, getCachedSearchHits, getCachedSong } from "./cacheFunctions";
 import { fetchPreloadedState, fetchRawAnnotations, fetchSongHits } from "./apiFunctions";
 import { SongData } from "../types/songData";
@@ -68,6 +68,7 @@ async function getSongData(gen: number, songId: number | null, doCache: () => bo
 	    songData.lyrics = cachedSong.lyrics
 	    songData.annotations = cachedSong.annotations
         songData.url = cachedSong.url
+        songData.translations = cachedSong.translations
         result.done = true;
         result.success = true;
         return {result, songData};
@@ -80,6 +81,8 @@ async function getSongData(gen: number, songId: number | null, doCache: () => bo
 
 	const rawLyrics = getRawLyrics(preloadedState);
 	const songDescription = getDescription(preloadedState);
+    const translations = getTranslations(songId, preloadedState);
+
     const formattedLyrics = formatLyrics(rawLyrics)
     const formattedAnnotations = formatAnnotations(rawAnnotations)
     const songUrl = `https://genius.com/songs/${songId}`
@@ -89,6 +92,7 @@ async function getSongData(gen: number, songId: number | null, doCache: () => bo
 	songData.lyrics = formattedLyrics ?? null
 	songData.annotations = formattedAnnotations ?? null
     songData.url = songUrl ?? null;
+    songData.translations = translations
     result.done = true;
     result.success = true;
     

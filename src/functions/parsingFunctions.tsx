@@ -1,17 +1,40 @@
 import { Annotation } from "../types/annotation";
+import { NORMALIZE_RULES } from "../types/normalizeRule";
+import { config } from "../configDefaults";
+import Fuse from "fuse.js"
 
-function checkSongMatch(title: string, name: string, artist: string): boolean {
-    const normalizedTitle = normalize(title);
-    const normalizedName = normalize(name);
-    const normalizedArtist = normalize(artist);
+function checkSongMatch(geniusTitle: string, spotifyName: string, spotifyArtist: string): boolean {
+    if (geniusTitle.includes(spotifyName) && geniusTitle.includes(spotifyArtist)) {
+        return true;
+    }
 
-    const nameWords = normalizedName.split(" ").filter(Boolean);
-    const artistWords = normalizedArtist.split(" ").filter(Boolean);
+    const geniusWords = geniusTitle.split(' ');
+    const titleFuse = new Fuse(geniusWords, {
+        threshold: 0.35,
+        distance: 10
+    });
 
-    const nameMatches = nameWords.every(word => normalizedTitle.includes(word));
-    const artistMatches = artistWords.every(word => normalizedTitle.includes(word));
+    const artistMatch = titleFuse.search(spotifyArtist).length > 0 || geniusTitle.includes(spotifyArtist);
+    if (!artistMatch) return false;
 
-    return nameMatches && artistMatches;
+    const nameTokens = spotifyName.split(' ').filter(t => t.length > 1);
+    let matchedCount = 0;
+
+    for (const token of nameTokens) {
+        if (geniusTitle.includes(token)) {
+            matchedCount++;
+            continue;
+        }
+        
+        // Fallback to fuzzy match if word fails
+        const fuzzyResult = titleFuse.search(token);
+        if (fuzzyResult.length > 0) {
+            matchedCount++;
+        }
+    }
+
+    const score = matchedCount / nameTokens.length;
+    return score >= config.SONG_MATCH_THRESHOLD;
 }
 
 function formatAnnotations(annotations: Annotation[]){
@@ -34,13 +57,17 @@ function normalizeQuotes(s: string) {
     return s.replace(/[‘’]/g, "'").replace(/[“”]/g, '"');
 }
 
-function normalize(string: string): string {
-    // Remove any (feat. …) or [feat. …] anywhere in the string, as well normalize saces
-    return string
-    .replace(/\s*[\(\[]\s*feat[^\)\]]*[\)\]]/gi, '')
-    .replace(/\u00A0/g, " ")
-    .replace(/[^\p{L}\p{N}\s]/gu, "")
-    .replace(/\s+/g, " ")
+function normalize(title: string): string {
+  let result = title;
+
+  for (const rule of NORMALIZE_RULES) {
+    result = result.replace(rule.pattern, rule.replace ?? "");
+  }
+
+  return result
+    .replace(/\u00A0/g, " ")                 // nbsp → space
+    .replace(/[^\p{L}\p{N}\s]/gu, "")        // strip punctuation
+    .replace(/\s+/g, " ")                    // collapse spaces
     .toLowerCase()
     .trim();
 }
@@ -60,6 +87,21 @@ function getDescription(preloadedState: any){
     const doc = new DOMParser().parseFromString(descriptionHtml, "text/html");
     const description = doc.body.textContent || "";
     return description;
+}
+
+function getTranslations(id: number, preloadedState: any){
+    const translationMap = new Map<string, number>();
+    if(!preloadedState) return translationMap;
+    
+    const translationKeys = [id, ...preloadedState.entities.songs[id].translationSongs];
+    translationKeys.sort();
+    
+    for(const key of translationKeys){
+        const songLanguage = preloadedState.entities.songs[key].language as keyof typeof config.GENIUS_LANGUAGE_MAP;
+        translationMap.set(config.GENIUS_LANGUAGE_MAP[songLanguage], key);
+    }
+
+    return translationMap;
 }
 
 function getTextFromNode(node: Node): string {
@@ -102,31 +144,4 @@ function extractLyrics(lyricsData: Element){
     return lyrics;
 }
 
-function parseJSStringLiteralJSON(jsStringLiteral: String){
-    jsStringLiteral = jsStringLiteral.slice(1, -1);
-
-    let jsonString = jsStringLiteral
-        .replace(/\\\\/g, '\\')
-        .replace(/\\"/g, '"')
-        .replace(/\\'/g, "'")
-        .replace(/\\n/g, '\n')
-        .replace(/\\r/g, '\r')
-        .replace(/\\t/g, '\t');
-
-    jsonString = jsonString.replace(/[\u0000-\u001F]/g, (c) => {
-        switch (c) {
-            case '\b': return '\\b';
-            case '\f': return '\\f';
-            case '\n': return '\\n';
-            case '\r': return '\\r';
-            case '\t': return '\\t';
-            default:
-                return '\\u' + c.charCodeAt(0).toString(16).padStart(4, '0');
-        }
-    });
-
-    jsonString = jsonString.replace(/\\(?!["\\/bfnrtu])/g, '\\\\');
-    return jsonString;
-}
-
-export { extractLyrics, formatAnnotations, formatLyrics, getRawLyrics, getDescription, checkSongMatch, normalize, parseJSStringLiteralJSON}
+export { extractLyrics, formatAnnotations, formatLyrics, getRawLyrics, getDescription, getTranslations, checkSongMatch, normalize }
