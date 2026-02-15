@@ -1,7 +1,7 @@
 import { openDB } from "idb";
 import { config } from "../configDefaults";
 
-export const dbPromise = openDB('genius-annotations-cache-v2', 1, {
+export const dbPromise = openDB('genius-annotations-cache-v3', 1, { // V3: Translation update
     upgrade(db) {
         if(!db.objectStoreNames.contains('tracks')) {
             db.createObjectStore('tracks', {keyPath: 'uri'})
