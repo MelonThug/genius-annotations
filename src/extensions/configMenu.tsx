@@ -11,8 +11,8 @@ const { useState, useEffect } = React;
 
 function ConfigPanel({versionInfoParam}: {versionInfoParam: VersionInfo}){
     const [proxyUrl, setProxyUrl] = useState(() => {
-        const proxy = Spicetify.LocalStorage.get("genius-annotations-proxy")
-        if(proxy === null) Spicetify.LocalStorage.set("genius-annotations-proxy", config.PROXY);
+        const proxy = Spicetify.LocalStorage.get("genius-annotations:proxy")
+        if(proxy === null) Spicetify.LocalStorage.set("genius-annotations:proxy", config.PROXY);
 
         return proxy !== null ? proxy : config.PROXY;
     });
