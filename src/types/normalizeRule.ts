@@ -12,7 +12,7 @@ const NORMALIZE_RULES: NormalizeRule[] = [
   },
   {
     name: "metadata separator purge",
-    pattern: /\s*[-–—/|]\s*.*\b(feat\.?|ft\.?|featuring|with|remaster(?:ed)?|live|demo|version|remix|mix|edit|explicit|clean|anniversary|ost|soundtrack|edition|acoustic|original|pt\.?|part|bonus|deluxe|expanded|as featured in|b[- ]?side|from the|ep|radio|special|extended|session)\b.*$/gi,
+    pattern: /\s*[-–—/|]\s*.*\b(feat\.?|ft\.?|featuring|with|remaster(?:ed)?|live|demo|version|ver\.?|complete|remix|mix|edit|explicit|clean|anniversary|ost|soundtrack|edition|acoustic|original|pt\.?|part|bonus|deluxe|expanded|as featured in|b[- ]?side|from the|ep|radio|special|extended|session)\b.*$/gi,
     replace: ""
   },
   {

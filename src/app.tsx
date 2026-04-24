@@ -13,7 +13,7 @@ import { config } from './configDefaults';
 
 const App: React.FC = () => {
 	const songGen = useRef<number>(0); // Will use to track data across async calls
-	const debounceRef = useRef<number | null>(null); // To stop API spam while spam skipping songs
+	const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null); // To stop API spam while spam skipping songs
 	const shouldCacheRef = useRef<boolean>(false);
 
 	const [gen, setGen] = useState(songGen.current);

@@ -50,7 +50,7 @@ describe('Song Title Normalization', () => {
     ["Song Title (Extended Version) (feat. Artist)", "song title"],
     ["Track Name (Live at Wembley) – Remaster", "track name"],
     ["Always Somewhere (2015 - Remaster)", "always somewhere"],
-    ["ココロノナカ - Complete ver.", "ココロノナカ complete ver"],
+    ["ココロノナカ - Complete ver.", "ココロノナカ"],
     ["Australia (Don't Ever Let Her Go)", "australia dont ever let her go"],
     ["White Lies - EP Version", "white lies"],
     ["Dearth - B-Side", "dearth"],
