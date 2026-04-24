@@ -56,7 +56,16 @@ describe('Song Title Normalization', () => {
     ["Dearth - B-Side", "dearth"],
     ["2001 - LCO Session", "2001"],
     ["Mercy Mercy Me (The Ecology) by The Strokes (Ft. Eddie Vedder & Josh Homme)", "mercy mercy me the ecology by the strokes"],
-    ["When It Started (Last Nite B-Side)", "when it started"]
+    ["When It Started (Last Nite B-Side)", "when it started"],
+    ["LOVE. FEAT. ZACARI.", "love"],
+    ["B.I.D", "bid"],
+    ["F.U.T.W.", "futw"],
+    ["Y'all My Ni**as", "yall my niggas"],
+    ["My Ni**as - Soundtrack Version", "my niggas"],
+    ["F*ckwithmeyouknowigotit", "fckwithmeyouknowigotit"],
+    ["Too Rich For The B*tch", "too rich for the btch"],
+    ["WILD EA$T", "wild east"],
+    ["$leg Kla$", "sleg klas"]
   ];
 
   it.each(testCases)('should normalize "%s" to "%s"', (input, expected) => {
