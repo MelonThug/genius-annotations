@@ -1,19 +1,37 @@
 type NormalizeRule = {
   name: string;
   pattern: RegExp;
-  replace?: string;
+  replace?: any;
 };
 
 const NORMALIZE_RULES: NormalizeRule[] = [
-  {
+{
     name: "metadata block purge",
     pattern: /\s*[\(\[]\s*[^()\[\]]*?\b(feat\.?|ft\.?|featuring|with|remaster(?:ed)?|live|demo|version|remix|mix|edit|explicit|clean|anniversary|ost|soundtrack|edition|acoustic|original|pt\.?|part|bonus|deluxe|expanded|ep|b[- ]?side)\b[^()\[\]]*?[\]\)]/gi,
     replace: ""
   },
   {
     name: "metadata separator purge",
-    pattern: /\s*[-–—/|]\s*.*\b(feat\.?|ft\.?|featuring|with|remaster(?:ed)?|live|demo|version|remix|mix|edit|explicit|clean|anniversary|ost|soundtrack|edition|acoustic|original|pt\.?|part|bonus|deluxe|expanded|as featured in|b[- ]?side|from the|ep|radio|special|extended|session)\b.*$/gi,
+    pattern: /\s*[-–—/|]\s*.*?\b(feat\.?|ft\.?|featuring|with|remaster(?:ed)?|live|demo|version|ver\.?|complete|remix|mix|edit|explicit|clean|anniversary|ost|soundtrack|edition|acoustic|original|pt\.?|part|bonus|deluxe|expanded|as featured in|b[- ]?side|from the|ep|radio|special|extended|session)\b.*$/gi,
     replace: ""
+  },
+  {
+    name: "loose metadata purge",
+    pattern: /[\s.]+\b(feat\.?|ft\.?|featuring|with|remaster(?:ed)?|live|demo|version|ver\.?|complete|remix|mix|edit|anniversary|ost|soundtrack|edition|acoustic|original|pt\.?|part|bonus|deluxe|expanded|ep|b[- ]?side|session|radio|special|extended)\b.*$/gi,
+    replace: ""
+  },
+  {
+    name: "restore censored words and acronyms",
+    pattern: /[\p{L}\d*!@#%]+(?:\.[\p{L}\d*!@#%]+)+\.?|[\p{L}\d]+[*$!@#%]+[\p{L}\d]*|[*$!@#%]+[\p{L}\d]+/gu,
+    replace: (match: string) => {
+      let cleaned = match.toLowerCase();
+      if (/^ni[*!@#%]+as?$/i.test(cleaned)) {
+        return cleaned.endsWith('as') ? "niggas" : "nigga";
+      }
+      if (cleaned.includes('.')) return cleaned.replace(/\./g, '');
+      if (cleaned.includes('$')) cleaned = cleaned.replace(/\$/g, 's');
+      return cleaned.replace(/[*!@#%]/g, '');
+    }
   },
   {
     name: "year suffix purge",

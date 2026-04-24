@@ -1,10 +1,12 @@
+import { config } from "../configDefaults";
 import { Annotation } from "../types/annotation";
 import { checkSongMatch, normalize } from "./parsingFunctions";
 import JSON5 from 'json5'
 
+const proxy = Spicetify.LocalStorage.get("genius-annotations:proxy") ?? config.PROXY;
+
 async function fetchSongHits(name: string, artist: string, signal?: AbortSignal){
     const query = new URLSearchParams({q: `${artist} ${normalize(name)}`});
-    const proxy = Spicetify.LocalStorage.get("genius-annotations-proxy");
     const fullUrl = proxy + `https://api.genius.com/search?${query.toString()}`
     const hits = new Map<number, string>();
 
@@ -39,7 +41,6 @@ async function fetchSongHits(name: string, artist: string, signal?: AbortSignal)
 
 async function fetchRawAnnotations(id: number, signal?: AbortSignal){
     const geniusUrl = `?song_id=${id.toString()}&text_format=plain&per_page=50`
-    const proxy = Spicetify.LocalStorage.get("genius-annotations-proxy");
     const fullUrl = proxy + `https://api.genius.com/referents${encodeURIComponent(geniusUrl)}`;
     let annotations: Annotation[] = [];
 
@@ -71,7 +72,6 @@ async function fetchRawAnnotations(id: number, signal?: AbortSignal){
 }
 
 async function fetchPreloadedState(id: number, signal?: AbortSignal){
-    const proxy = Spicetify.LocalStorage.get("genius-annotations-proxy")
     const fullUrl = proxy + `https://genius.com/songs/${id.toString()}`;
 
     try {
