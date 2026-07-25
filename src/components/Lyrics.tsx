@@ -45,10 +45,12 @@ export default function Lyrics({lyrics, annotations}: {lyrics: Map<number, strin
                                 {line + ' '}
                             </span>
 
-                            {isSelected && 
-                            (
+                            {isSelected && annotation && (
                                 <div className={styles.annotation_container}>
-                                    <p className={styles.annotation_text}>{annotation?.text}</p>
+                                    <div 
+                                    className={styles.annotation_body}
+                                    dangerouslySetInnerHTML={sanitizeHtml(annotation.text, styles.twitter_tweet)}
+                                    />
                                 </div>
                             )}
                         </>
@@ -57,5 +59,42 @@ export default function Lyrics({lyrics, annotations}: {lyrics: Map<number, strin
             </div>
     )
 }
+
+function sanitizeHtml(rawHtml: string, tweet_style: string): { __html: string } {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(rawHtml, "text/html");
+
+    // For twitter embeds, just extract the link.
+    doc.querySelectorAll("blockquote.twitter-tweet").forEach((blockquote) => {
+        const link = blockquote.querySelector("a");
+        const href = link?.getAttribute("href");
+
+        if (href) {
+            const cleanLink = doc.createElement("a");
+            cleanLink.setAttribute("href", href);
+            cleanLink.classList.add(tweet_style);
+            cleanLink.textContent = "View tweet";
+            blockquote.replaceWith(cleanLink);
+        }
+    });
+
+    doc.querySelectorAll("br").forEach((br) => br.remove());
+    doc.querySelectorAll("script, style, object, embed").forEach((node) => node.remove());
+    doc.querySelectorAll("*").forEach((element) => {
+        Array.from(element.attributes).forEach((attr) => {
+            if (attr.name.startsWith("on")) {
+                element.removeAttribute(attr.name);
+            }
+        });
+    });
+
+    doc.querySelectorAll("a").forEach((anchor) => {
+        anchor.setAttribute("target", "_blank");
+        anchor.setAttribute("rel", "noopener noreferrer");
+    });
+
+    return { __html: doc.body.innerHTML };
+}
+
 
 

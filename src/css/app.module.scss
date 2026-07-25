@@ -36,27 +36,7 @@
 }
 
 .translation_item {
-  text-overflow: ellipsis;
-  
-}
-
-.annotation_container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  background-color: white;
-  border-radius: 10px;
-  padding: 1em;
-  margin: 1em auto;
-  width: 70%;
-}
-
-.annotation_text {
-  font-size: 17px;
-  color: black;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  text-overflow: ellipsis; 
 }
 
 .lyrics_text {
@@ -116,6 +96,57 @@
 }
 
 
+// Annotation Styles
+.annotation_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: white;
+  border-radius: 10px;
+  padding: 1em;
+  margin: 1em auto;
+  width: 70%;
+}
+
+.annotation_body, .annotation_body p {
+  font-size: 17px;
+  color: black;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.annotation_body a {
+  color: hsl(111.29deg 100% 28.95%);
+  text-decoration: underline;
+}
+
+.annotation_body blockquote {
+  border-left: 3px solid hsl(111.29deg 100% 28.95%);
+  margin: 0.75rem 0;
+  padding-left: 0.75rem;
+  font-style: italic;
+  opacity: 0.9;
+}
+
+.annotation_body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 0.5rem 0;
+}
+
+.annotation_body iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: none;
+  border-radius: 8px;
+  margin: 0.5rem 0;
+}
+
+.annotation_body a.twitter_tweet {
+  color: #1DA1F2;
+}
 
 // Config styles
 .config_input_text {

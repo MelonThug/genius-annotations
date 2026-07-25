@@ -40,7 +40,7 @@ async function fetchSongHits(name: string, artist: string, signal?: AbortSignal)
 }
 
 async function fetchRawAnnotations(id: number, signal?: AbortSignal){
-    const geniusUrl = `?song_id=${id.toString()}&text_format=plain&per_page=50`
+    const geniusUrl = `?song_id=${id.toString()}&text_format=html&per_page=50`
     const fullUrl = proxy + `https://api.genius.com/referents${encodeURIComponent(geniusUrl)}`;
     let annotations: Annotation[] = [];
 
@@ -61,7 +61,8 @@ async function fetchRawAnnotations(id: number, signal?: AbortSignal){
         for (const referent of data.response.referents){
             const annotationID = referent.id;
             const annotationLyric = referent.fragment;
-            const annotationText = referent.annotations[0].body.plain
+            const annotationText = referent.annotations[0].body.html
+
             annotations.push({id: annotationID, lyrics: annotationLyric, text: annotationText});
         }
     } catch (e) {
