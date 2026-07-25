@@ -1,4 +1,83 @@
-// Lyrics styles
+$color-brand: hsl(142deg, 76%, 48%);
+$color-brand-light: hsl(97.73deg, 100%, 50%);
+$color-brand-dark: hsl(111.29deg, 100%, 28.95%);
+$color-twitter: #1da1f2;
+
+$color-white: #ffffff;
+$color-black: #000000;
+$color-hover-gray: rgb(243, 243, 243);
+$color-active-gray: rgb(228, 228, 228);
+
+$font-main: 17px;
+$font-large: 20px;
+$font-title: 25px;
+
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 10px;
+
+@mixin base-select {
+  padding: 0.3em;
+  font-size: 16px;
+  color: $color-black;
+  background-color: $color-white;
+  border-radius: $radius-lg;
+  cursor: pointer;
+  max-width: 100%;
+}
+
+// For dangerouslySetHtml (description body, annotations)
+@mixin html-content-styles($link-color, $quote-color) {
+  font-size: $font-main;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+
+  p {
+    font-size: $font-main;
+    white-space: pre-wrap;
+    margin: 0;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  a {
+    color: $link-color;
+    text-decoration: underline;
+
+    &.twitter_tweet {
+      color: $color-twitter;
+    }
+  }
+
+  blockquote {
+    border-left: 3px solid $quote-color;
+    margin: 0.75rem 0;
+    padding-left: 0.75rem;
+    font-style: italic;
+    opacity: 0.9;
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: $radius-sm;
+    margin: 0.5rem auto;
+  }
+
+  iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: none;
+    border-radius: $radius-md;
+    margin: 0.5rem 0;
+  }
+}
+
+
+// Lyrics & Translations
 .translation_container {
   display: flex;
   justify-content: center;
@@ -11,81 +90,63 @@
   gap: 1em;
 }
 
-.search_hit_select {
+.search_hit_select { 
+  @include base-select;
   width: 100%;
-  max-width: 100%;
-  padding: 0.3em;
-  font-size: 16px;
-  color: black;
-  background-color: white;
-  border-radius: 10px;
-  white-space: normal;   
-  cursor: pointer;
+  white-space: normal;
 }
 
 .translation_select {
+  @include base-select;
   width: auto;
-  max-width: 100%;
-  padding: 0.3em;
-  font-size: 16px;
-  color: black;
-  background-color: white;
-  border-radius: 10px;
-  white-space: nowrap;   
-  cursor: pointer;
+  white-space: nowrap;
 }
 
 .translation_item {
-  text-overflow: ellipsis; 
-}
-
-.lyrics_text {
-  font-size: 20px;
-  white-space: pre-wrap;
-  padding: 0.1px;
-}
-
-.lyrics_text_annotated {
-  font-size: 20px;
-  background-color: hsl(97.73deg 100% 50%);
-  color: black;
-  white-space: pre-wrap;
-  padding: 0.1px;
-}
-
-.lyrics_text_selected {
-  font-size: 20px;
-  background-color: hsl(142deg 76% 48%);
-  color: black;
-  white-space: pre-wrap;
-  padding: 0.1px;
-}
-
-.lyrics_text_annotated:hover {
-  background-color: hsl(142deg 76% 48%);
+  text-overflow: ellipsis;
 }
 
 .lyrics_container {
-  display: inline;
-  padding: 60px 100px 60px 100px;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+  display: block; // Changed from 'inline' so padding and layout work reliably
   padding: 1em;
+  text-align: center;
   user-select: text;
   cursor: default;
 }
 
+.lyrics_text {
+  font-size: $font-large;
+  white-space: pre-wrap;
+  padding: 0.1px;
+
+  &_annotated {
+    @extend .lyrics_text;
+    background-color: $color-brand-light;
+    color: $color-black;
+
+    &:hover {
+      background-color: $color-brand;
+    }
+  }
+
+  &_selected {
+    @extend .lyrics_text;
+    background-color: $color-brand;
+    color: $color-black;
+  }
+}
+
+// Description
 .description_container {
   display: flex;
+  flex-direction: column;
   gap: 1em;
   padding: 1em;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
   text-align: left;
-  border: 2px solid hsl(142deg 76% 48%);
-  border-radius: 10px;
+  border: 2px solid $color-brand;
+  border-radius: $radius-lg;
   user-select: text;
 }
 
@@ -93,89 +154,30 @@
   display: flex;
   flex-direction: column;
   gap: 1em;
+  @include html-content-styles($color-brand, $color-brand);
 }
 
-.description_container p {
-  font-size: 17px;
-  white-space: pre-wrap;
-  margin: 0;
-}
-
-.description_container a {
-  color: hsl(142deg 76% 48%);
-  text-decoration: underline;
-}
-
-.description_container blockquote {
-  border-left: 3px solid hsl(142deg 76% 48%);
-  margin: 0.75rem 0;
-  padding-left: 0.75rem;
-  font-style: italic;
-  opacity: 0.9;
-}
-
-// Annotation Styles
+// Annotations
 .annotation_container {
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
-  background-color: white;
-  border-radius: 10px;
+  background-color: $color-white;
+  border-radius: $radius-lg;
   padding: 1em;
   margin: 1em auto;
   width: 70%;
 }
 
-.annotation_body, .annotation_body p {
-  font-size: 17px;
-  color: black;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+.annotation_body {
+  color: $color-black;
+  @include html-content-styles($color-brand-dark, $color-brand-dark);
 }
 
-.annotation_body a {
-  color: hsl(111.29deg 100% 28.95%);
-  text-decoration: underline;
-}
-
-.annotation_body blockquote {
-  border-left: 3px solid hsl(111.29deg 100% 28.95%);
-  margin: 0.75rem 0;
-  padding-left: 0.75rem;
-  font-style: italic;
-  opacity: 0.9;
-}
-
-.annotation_body img, .description_container img {
-  display: block;
-  max-width: 100%;
-  height: auto;
-  border-radius: 4px;
-  margin: 0.5rem auto;
-}
-
-.annotation_body iframe, .description_container iframe {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  border: none;
-  border-radius: 8px;
-  margin: 0.5rem 0;
-}
-
-.annotation_body a.twitter_tweet, .description_container a.twitter_tweet {
-  color: #1DA1F2;
-}
-
-// Config styles
-.config_input_text {
-  padding: 0.5em;
-  background-color: white;
-  width: 100%;
-}
-
+// Config menu
 .config_container_main {
-  display:flex;
+  display: flex;
   gap: 2em;
   flex-direction: column;
   user-select: text;
@@ -188,22 +190,10 @@
   gap: 1em;
 }
 
-.config_button {
-  padding: 7px 10px 7px 10px;
-  border-radius: 10px;
-  border:none;
-  color: black;
-  background-color: hsl(0, 0%, 100%);
-  cursor: pointer;
-  width: fit-content;
-}
-
-.config_button:hover{
-  background-color: hsl(0, 0%, 80%);
-}
-
-.config_text_label {
-  font-size: 20px;
+.config_input_text {
+  padding: 0.5em;
+  background-color: $color-white;
+  width: 100%;
 }
 
 .config_text_container {
@@ -214,6 +204,16 @@
   flex-direction: column;
 }
 
+.config_text_label {
+  font-size: $font-large;
+}
+
+.config_button {
+  @extend .button;
+  width: fit-content;
+}
+
+// Changelog
 .changelog {
   ul {
     list-style: disc;
@@ -227,14 +227,14 @@
   }
 
   code {
-    background: rgba(255,255,255,0.08);
+    background: rgba(255, 255, 255, 0.08);
     padding: 0.15rem 0.3rem;
-    border-radius: 4px;
+    border-radius: $radius-sm;
     font-family: monospace;
   }
 }
 
-// Misc styles
+// Global
 .container {
   display: flex;
   justify-content: center;
@@ -242,27 +242,27 @@
   flex-direction: column;
   padding: 3em;
   gap: 1em;
-  width: 100%; 
+  width: 100%;
 }
 
 .title {
-  font-size: 25px;
+  font-size: $font-title;
 }
 
 .button {
-  padding: 7px 10px 7px 10px;
-  border-radius: 10px;
-  border:none;
-  color: black;
-  background-color: rgb(255, 255, 255);
+  padding: 7px 10px;
+  border-radius: $radius-lg;
+  border: none;
+  color: $color-black;
+  background-color: $color-white;
   cursor: pointer;
 
   &:hover {
-    background-color: rgb(243, 243, 243);
+    background-color: $color-hover-gray;
   }
 
   &:active {
-    background-color: rgb(228, 228, 228);
+    background-color: $color-active-gray;
   }
 }
 
@@ -274,5 +274,3 @@
 .row {
   flex-direction: row;
 }
-
-
