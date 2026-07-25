@@ -89,12 +89,30 @@
   user-select: text;
 }
 
-.description_text {
+.description_body {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.description_container p {
   font-size: 17px;
   white-space: pre-wrap;
   margin: 0;
 }
 
+.description_container a {
+  color: hsl(142deg 76% 48%);
+  text-decoration: underline;
+}
+
+.description_container blockquote {
+  border-left: 3px solid hsl(142deg 76% 48%);
+  margin: 0.75rem 0;
+  padding-left: 0.75rem;
+  font-style: italic;
+  opacity: 0.9;
+}
 
 // Annotation Styles
 .annotation_container {
@@ -129,14 +147,15 @@
   opacity: 0.9;
 }
 
-.annotation_body img {
+.annotation_body img, .description_container img {
+  display: block;
   max-width: 100%;
   height: auto;
   border-radius: 4px;
-  margin: 0.5rem 0;
+  margin: 0.5rem auto;
 }
 
-.annotation_body iframe {
+.annotation_body iframe, .description_container iframe {
   width: 100%;
   aspect-ratio: 16 / 9;
   border: none;
@@ -144,7 +163,7 @@
   margin: 0.5rem 0;
 }
 
-.annotation_body a.twitter_tweet {
+.annotation_body a.twitter_tweet, .description_container a.twitter_tweet {
   color: #1DA1F2;
 }
 

@@ -84,9 +84,7 @@ function getDescription(preloadedState: any){
     if(!preloadedState) return "";
     const annotationKey = Object.keys(preloadedState.entities.annotations)[0]
     const descriptionHtml = preloadedState.entities.annotations[annotationKey].body.html;
-    const doc = new DOMParser().parseFromString(descriptionHtml, "text/html");
-    const description = doc.body.textContent || "";
-    return description;
+    return descriptionHtml;
 }
 
 function getTranslations(id: number, preloadedState: any){
@@ -144,4 +142,72 @@ function extractLyrics(lyricsData: Element){
     return lyrics;
 }
 
-export { extractLyrics, formatAnnotations, formatLyrics, getRawLyrics, getDescription, getTranslations, checkSongMatch, normalize }
+function sanitizeHtml(rawHtml: string, twitterClassName?: string, maxLength?: number): { __html: string } {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(rawHtml, "text/html");
+
+    // Transform twitter embeds into just links
+    doc.querySelectorAll("blockquote.twitter-tweet").forEach((blockquote) => {
+        const link = blockquote.querySelector("a");
+        const href = link?.getAttribute("href");
+
+        if (href) {
+            const cleanLink = doc.createElement("a");
+            cleanLink.setAttribute("href", href);
+            if (twitterClassName) cleanLink.className = twitterClassName;
+            cleanLink.textContent = "View tweet";
+            blockquote.replaceWith(cleanLink);
+        }
+    });
+
+    doc.querySelectorAll("br, script, style, object, embed").forEach((node) => node.remove());
+    doc.querySelectorAll("*").forEach((element) => {
+        Array.from(element.attributes).forEach((attr) => {
+            if (attr.name.startsWith("on")) element.removeAttribute(attr.name);
+        });
+    });
+
+    doc.querySelectorAll("a").forEach((anchor) => {
+        anchor.setAttribute("target", "_blank");
+        anchor.setAttribute("rel", "noopener noreferrer");
+    });
+
+    if (maxLength && maxLength > 0) {
+        truncateDomNode(doc.body, maxLength);
+    }
+
+    return { __html: doc.body.innerHTML };
+}
+
+function truncateDomNode(root: Node, maxChars: number) {
+    let currentLength = 0;
+    let limitReached = false;
+
+    function traverse(node: Node) {
+        if (limitReached) {
+            node.parentNode?.removeChild(node);
+            return;
+        }
+
+        if (node.nodeType === Node.TEXT_NODE) {
+            const text = node.nodeValue || "";
+            if (currentLength + text.length > maxChars) {
+                const allowed = maxChars - currentLength;
+                node.nodeValue = text.slice(0, allowed) + "...";
+                currentLength = maxChars;
+                limitReached = true;
+            } else {
+                currentLength += text.length;
+            }
+        } else {
+            const children = Array.from(node.childNodes);
+            for (const child of children) {
+                traverse(child);
+            }
+        }
+    }
+
+    traverse(root);
+}
+
+export { extractLyrics, formatAnnotations, formatLyrics, getRawLyrics, getDescription, getTranslations, checkSongMatch, normalize, sanitizeHtml }
