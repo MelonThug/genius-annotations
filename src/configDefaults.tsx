@@ -3,11 +3,10 @@ export const config = {
     "VERSION": "v1.4.0",
     "INSTALL_COMMAND": `iwr -useb "https://raw.githubusercontent.com/MelonThug/genius-annotations/refs/heads/main/install.ps1" | iex`,
     "TRACK_CHANGE_DEBOUNCE": 727, //WYSI
-    "SONG_CACHE_TTL": 604800000, // 7 days
-    "ANNOTATIONS_CACHE_TTL": 604800000, // 7 days
-    "TRACK_CACHE_TTL": 259200000, // 3 days
+    "SONG_CACHE_TTL": 1209600000, // 14 days
+    "TRACK_CACHE_TTL": 1209600000, // 14 days
     "SEARCH_CACHE_TTL": 86400000, // 1 day
-    "TRACK_CACHE_THRESHOLD": 3,
+    "TRACK_CACHE_THRESHOLD": 2,
     "SONG_MATCH_THRESHOLD": 0.75,
     "GENIUS_LANGUAGE_MAP": {
         "aa": "Afar",
