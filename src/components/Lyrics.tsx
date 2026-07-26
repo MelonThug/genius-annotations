@@ -2,8 +2,9 @@ import styles from '../css/app.module.scss'
 import React, { useState, useRef, useLayoutEffect } from "react"
 import { Annotation } from '../types/annotation';
 import { sanitizeHtml } from '../functions/parsingFunctions';
+import { LyricLine } from '../types/lyricLine';
 
-export default function Lyrics({lyrics, annotations}: {lyrics: Map<number, string>|null, annotations: Map<string, Annotation>|null}){
+export default function Lyrics({lyrics, annotations}: {lyrics: Map<number, LyricLine>|null, annotations: Map<number, Annotation>|null}){
     const [hoveredAnnotationId, setHoveredAnnotationId] = useState<number | null>(null);
     const [selectedAnnotation, setSelectedAnnotation] = useState<{annotationId: number, lyricIndex: number} | null>(null);
     const selectedLyricRef = useRef<HTMLSpanElement | null>(null);
@@ -22,11 +23,12 @@ export default function Lyrics({lyrics, annotations}: {lyrics: Map<number, strin
     return (
             <div className={styles.lyrics_container} onClick={() => setSelectedAnnotation(null)}>
                 {Array.from(lyrics).map(([lyricIndex, line]) => {
-                    if(line === "\n") return <br></br>;
-                    if(line === "") return " ";
+                    const { text, annotationId } = line;
 
-                    const normalized = line.toLowerCase();
-                    const annotation = annotations?.get(normalized);
+                    if(text === "\n") return <br></br>;
+                    if(text === "") return " ";
+
+                    const annotation = annotationId ? annotations?.get(annotationId) ?? null : null;
                     const isAnnotated = !!annotation;
                     const isSelected = isAnnotated && selectedAnnotation?.annotationId === annotation.id && selectedAnnotation?.lyricIndex === lyricIndex;
                     const className = isAnnotated ? 
@@ -54,7 +56,7 @@ export default function Lyrics({lyrics, annotations}: {lyrics: Map<number, strin
                                 }
                             }
                             >
-                                {line + ' '}
+                                {text + ' '}
                             </span>
 
                             {isSelected && annotation && (

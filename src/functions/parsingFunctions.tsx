@@ -2,6 +2,7 @@ import { Annotation } from "../types/annotation";
 import { NORMALIZE_RULES } from "../types/normalizeRule";
 import { config } from "../configDefaults";
 import Fuse from "fuse.js"
+import { LyricLine } from "../types/lyricLine";
 
 function checkSongMatch(geniusTitle: string, spotifyName: string, spotifyArtist: string): boolean {
     if (geniusTitle.includes(spotifyName) && geniusTitle.includes(spotifyArtist)) {
@@ -38,19 +39,17 @@ function checkSongMatch(geniusTitle: string, spotifyName: string, spotifyArtist:
 }
 
 function formatAnnotations(annotations: Annotation[]){
+    const annotationsMap = new Map<number, Annotation>();
     for(const annotation of annotations){
-        annotation.lyrics = normalizeQuotes(annotation.lyrics);
+        annotationsMap.set(annotation.id, annotation);
     }
-    const annotationsMap = new Map(annotations.map((annotation) => [annotation.lyrics.toLowerCase(), annotation]))
     return annotationsMap;
 }
 
 function formatLyrics(rawLyrics: Element|null){
     if(!rawLyrics) return new Map();
-    const lyrics = extractLyrics(rawLyrics).map(normalizeQuotes)
-    let lyricsMap = new Map<number, string>();
-    lyricsMap = new Map(lyrics.map((line, i) => [i, line]));
-    return lyricsMap
+    const lyrics = extractLyrics(rawLyrics)
+    return new Map(lyrics.map((line, i) => [i, line]));
 }
 
 function normalizeQuotes(s: string) {
@@ -116,7 +115,7 @@ function getTextFromNode(node: Node): string {
 }
 
 function extractLyrics(lyricsData: Element){
-    let lyrics: string[] = [];
+    let lyrics: LyricLine[] = [];
     let lyricsBegan = false;
 
     for(const node of lyricsData.childNodes) {
@@ -128,15 +127,39 @@ function extractLyrics(lyricsData: Element){
             }
         }
 
-        if(node.nodeType === Node.TEXT_NODE) {
-            if(node.textContent) lyrics.push(node.textContent.trim());
+        if(node.nodeName === "BR" && lyricsBegan){
+            lyrics.push({text: "\n", annotationId: null});
 
-        } else if(node.nodeName === "BR" && lyricsBegan) {
-            lyrics.push("\n");
+        } else if (node.nodeName === "A"){
+            const anchor = node as HTMLAnchorElement;
+            const dataId = anchor.getAttribute("data-id");
+            let annotationId = dataId ? parseInt(dataId, 10) : null; // Lyrics contain the annotationId in the data-id attribute of their href
 
-        } else if(node.nodeType === Node.ELEMENT_NODE) {
-            const text = getTextFromNode(node);
-            if (text) lyrics.push(text.trim());
+            const text = getTextFromNode(anchor).trim();
+            if(text){
+                lyrics.push({
+                    text: text,
+                    annotationId: annotationId && !isNaN(annotationId) ? annotationId : null
+                });
+            }
+
+        } else if (node.nodeType === Node.TEXT_NODE){
+            const text = node.textContent?.trim();
+            if(text){
+                lyrics.push({
+                    text: text,
+                    annotationId: null
+                });
+            }
+
+        } else if (node.nodeType === Node.ELEMENT_NODE){
+            const text = getTextFromNode(node).trim();
+            if(text){
+                lyrics.push({
+                    text: text,
+                    annotationId: null
+                });
+            }
         }
     }
     return lyrics;
