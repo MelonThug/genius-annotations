@@ -17,7 +17,7 @@ const NORMALIZE_RULES: NormalizeRule[] = [
   },
   {
     name: "loose metadata purge",
-    pattern: /[\s.]+\b(feat\.?|ft\.?|featuring|with|remaster(?:ed)?|live|demo|version|ver\.?|complete|remix|mix|edit|anniversary|ost|soundtrack|edition|acoustic|original|pt\.?|part|bonus|deluxe|expanded|ep|b[- ]?side|session|radio|special|extended)\b.*$/gi,
+    pattern: /[\s.]+\b(feat\.?|ft\.?|featuring|with|remaster(?:ed)?|demo|version|ver\.?|complete|remix|mix|edit|anniversary|ost|soundtrack|edition|acoustic|original|pt\.?|part|bonus|deluxe|expanded|ep|b[- ]?side|session|radio|special|extended)\b.*$/gi,
     replace: ""
   },
   {

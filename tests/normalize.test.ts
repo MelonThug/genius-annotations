@@ -4,6 +4,11 @@ import { normalize } from "../src/functions/parsingFunctions";
 describe('Song Title Normalization', () => {
   const testCases = [
     // [Input Title, Expected Normalized Output]
+    ["The House I Live In", "the house i live in"],
+    ["Long Live the King", "long live the king"],
+    ["I Don't Want to Live Without You", "i dont want to live without you"],
+    ["Live in the Moment", "live in the moment"],
+    ["You Only Live Once", "you only live once"],
     ["When the Smoke Is Going Down - 2015 - Remaster", "when the smoke is going down"],
     ["I'll Try Anything Once (\"You Only Live Once\" demo) - Heart In a Cage B-Side", "ill try anything once"],
     ["Song Title (feat. Someone) [Remix 2022] (Live)", "song title"],
