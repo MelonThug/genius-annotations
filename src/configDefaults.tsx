@@ -3,6 +3,7 @@ export const config = {
     "VERSION": "v1.4.0",
     "INSTALL_COMMAND": `iwr -useb "https://raw.githubusercontent.com/MelonThug/genius-annotations/refs/heads/main/install.ps1" | iex`,
     "TRACK_CHANGE_DEBOUNCE": 727, //WYSI
+    "CACHE_VERSION": "v4",
     "SONG_CACHE_TTL": 1209600000, // 14 days
     "TRACK_CACHE_TTL": 1209600000, // 14 days
     "SEARCH_CACHE_TTL": 86400000, // 1 day
