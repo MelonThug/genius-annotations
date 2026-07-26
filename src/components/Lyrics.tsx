@@ -5,7 +5,6 @@ import { sanitizeHtml } from '../functions/parsingFunctions';
 import { LyricLine } from '../types/lyricLine';
 
 export default function Lyrics({lyrics, annotations}: {lyrics: Map<number, LyricLine>|null, annotations: Map<number, Annotation>|null}){
-    const [hoveredAnnotationId, setHoveredAnnotationId] = useState<number | null>(null);
     const [selectedAnnotation, setSelectedAnnotation] = useState<{annotationId: number, lyricIndex: number} | null>(null);
     const selectedLyricRef = useRef<HTMLSpanElement | null>(null);
 
@@ -42,8 +41,6 @@ export default function Lyrics({lyrics, annotations}: {lyrics: Map<number, Lyric
                             className={`${className}`}
                             data-annotation-id={annotation?.id}
                             data-lyricIndex={lyricIndex} 
-                            onMouseEnter={() => annotation && setHoveredAnnotationId(annotation.id)}
-                            onMouseLeave={() => setHoveredAnnotationId(null)}
                             onClick={(e) => {
                                     e.stopPropagation();
                                     const isAlreadySelected = selectedAnnotation?.annotationId === annotation?.id && selectedAnnotation?.lyricIndex === lyricIndex;

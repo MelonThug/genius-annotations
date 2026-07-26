@@ -52,10 +52,6 @@ function formatLyrics(rawLyrics: Element|null){
     return new Map(lyrics.map((line, i) => [i, line]));
 }
 
-function normalizeQuotes(s: string) {
-    return s.replace(/[‘’]/g, "'").replace(/[“”]/g, '"');
-}
-
 function normalize(title: string): string {
   let result = title;
 

@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
 import { formatAnnotations, formatLyrics, getDescription, getRawLyrics, getTranslations, normalize } from "./parsingFunctions";
 import { cacheSearchHits, cacheSong, getCachedSearchHits, getCachedSong } from "./cacheFunctions";
 import { fetchPreloadedState, fetchRawAnnotations, fetchSongHits } from "./apiFunctions";
 import { SongData } from "../types/songData";
-import { Annotation } from "../types/annotation";
 import { Result } from "../types/result";
 
 async function getSearchHits(gen: number, playerState: Spicetify.PlayerState | null, doCache: () => boolean){
