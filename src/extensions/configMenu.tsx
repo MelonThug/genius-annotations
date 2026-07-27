@@ -7,7 +7,7 @@ import ProxySection from '../components/config/ProxySection';
 import CacheSection from '../components/config/CacheSection';
 import SaveSection from '../components/config/SaveSection';
 const { React, ReactDOM } = Spicetify;
-const { useState, useEffect } = React;
+const { useState } = React;
 
 function ConfigPanel({versionInfoParam}: {versionInfoParam: VersionInfo}){
     const [proxyUrl, setProxyUrl] = useState(() => {

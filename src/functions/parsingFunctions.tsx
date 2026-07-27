@@ -2,6 +2,7 @@ import { Annotation } from "../types/annotation";
 import { NORMALIZE_RULES } from "../types/normalizeRule";
 import { config } from "../configDefaults";
 import Fuse from "fuse.js"
+import { LyricLine } from "../types/lyricLine";
 
 function checkSongMatch(geniusTitle: string, spotifyName: string, spotifyArtist: string): boolean {
     if (geniusTitle.includes(spotifyName) && geniusTitle.includes(spotifyArtist)) {
@@ -38,23 +39,17 @@ function checkSongMatch(geniusTitle: string, spotifyName: string, spotifyArtist:
 }
 
 function formatAnnotations(annotations: Annotation[]){
+    const annotationsMap = new Map<number, Annotation>();
     for(const annotation of annotations){
-        annotation.lyrics = normalizeQuotes(annotation.lyrics);
+        annotationsMap.set(annotation.id, annotation);
     }
-    const annotationsMap = new Map(annotations.map((annotation) => [annotation.lyrics.toLowerCase(), annotation]))
     return annotationsMap;
 }
 
 function formatLyrics(rawLyrics: Element|null){
     if(!rawLyrics) return new Map();
-    const lyrics = extractLyrics(rawLyrics).map(normalizeQuotes)
-    let lyricsMap = new Map<number, string>();
-    lyricsMap = new Map(lyrics.map((line, i) => [i, line]));
-    return lyricsMap
-}
-
-function normalizeQuotes(s: string) {
-    return s.replace(/[‘’]/g, "'").replace(/[“”]/g, '"');
+    const lyrics = extractLyrics(rawLyrics)
+    return new Map(lyrics.map((line, i) => [i, line]));
 }
 
 function normalize(title: string): string {
@@ -84,9 +79,7 @@ function getDescription(preloadedState: any){
     if(!preloadedState) return "";
     const annotationKey = Object.keys(preloadedState.entities.annotations)[0]
     const descriptionHtml = preloadedState.entities.annotations[annotationKey].body.html;
-    const doc = new DOMParser().parseFromString(descriptionHtml, "text/html");
-    const description = doc.body.textContent || "";
-    return description;
+    return descriptionHtml;
 }
 
 function getTranslations(id: number, preloadedState: any){
@@ -118,7 +111,7 @@ function getTextFromNode(node: Node): string {
 }
 
 function extractLyrics(lyricsData: Element){
-    let lyrics: string[] = [];
+    let lyrics: LyricLine[] = [];
     let lyricsBegan = false;
 
     for(const node of lyricsData.childNodes) {
@@ -130,18 +123,110 @@ function extractLyrics(lyricsData: Element){
             }
         }
 
-        if(node.nodeType === Node.TEXT_NODE) {
-            if(node.textContent) lyrics.push(node.textContent.trim());
+        if(node.nodeName === "BR" && lyricsBegan){
+            lyrics.push({text: "\n", annotationId: null});
 
-        } else if(node.nodeName === "BR" && lyricsBegan) {
-            lyrics.push("\n");
+        } else if (node.nodeName === "A"){
+            const anchor = node as HTMLAnchorElement;
+            const dataId = anchor.getAttribute("data-id");
+            let annotationId = dataId ? parseInt(dataId, 10) : null; // Lyrics contain the annotationId in the data-id attribute of their href
 
-        } else if(node.nodeType === Node.ELEMENT_NODE) {
-            const text = getTextFromNode(node);
-            if (text) lyrics.push(text.trim());
+            const text = getTextFromNode(anchor).trim();
+            if(text){
+                lyrics.push({
+                    text: text,
+                    annotationId: annotationId && !isNaN(annotationId) ? annotationId : null
+                });
+            }
+
+        } else if (node.nodeType === Node.TEXT_NODE){
+            const text = node.textContent?.trim();
+            if(text){
+                lyrics.push({
+                    text: text,
+                    annotationId: null
+                });
+            }
+
+        } else if (node.nodeType === Node.ELEMENT_NODE){
+            const text = getTextFromNode(node).trim();
+            if(text){
+                lyrics.push({
+                    text: text,
+                    annotationId: null
+                });
+            }
         }
     }
     return lyrics;
 }
 
-export { extractLyrics, formatAnnotations, formatLyrics, getRawLyrics, getDescription, getTranslations, checkSongMatch, normalize }
+function sanitizeHtml(rawHtml: string, twitterClassName?: string, maxLength?: number): { __html: string } {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(rawHtml, "text/html");
+
+    // Transform twitter embeds into just links
+    doc.querySelectorAll("blockquote.twitter-tweet").forEach((blockquote) => {
+        const link = blockquote.querySelector("a");
+        const href = link?.getAttribute("href");
+
+        if (href) {
+            const cleanLink = doc.createElement("a");
+            cleanLink.setAttribute("href", href);
+            if (twitterClassName) cleanLink.className = twitterClassName;
+            cleanLink.textContent = "View tweet";
+            blockquote.replaceWith(cleanLink);
+        }
+    });
+
+    doc.querySelectorAll("br, script, style, object, embed").forEach((node) => node.remove());
+    doc.querySelectorAll("*").forEach((element) => {
+        Array.from(element.attributes).forEach((attr) => {
+            if (attr.name.startsWith("on")) element.removeAttribute(attr.name);
+        });
+    });
+
+    doc.querySelectorAll("a").forEach((anchor) => {
+        anchor.setAttribute("target", "_blank");
+        anchor.setAttribute("rel", "noopener noreferrer");
+    });
+
+    if (maxLength && maxLength > 0) {
+        truncateDomNode(doc.body, maxLength);
+    }
+
+    return { __html: doc.body.innerHTML };
+}
+
+function truncateDomNode(root: Node, maxChars: number) {
+    let currentLength = 0;
+    let limitReached = false;
+
+    function traverse(node: Node) {
+        if (limitReached) {
+            node.parentNode?.removeChild(node);
+            return;
+        }
+
+        if (node.nodeType === Node.TEXT_NODE) {
+            const text = node.nodeValue || "";
+            if (currentLength + text.length > maxChars) {
+                const allowed = maxChars - currentLength;
+                node.nodeValue = text.slice(0, allowed) + "...";
+                currentLength = maxChars;
+                limitReached = true;
+            } else {
+                currentLength += text.length;
+            }
+        } else {
+            const children = Array.from(node.childNodes);
+            for (const child of children) {
+                traverse(child);
+            }
+        }
+    }
+
+    traverse(root);
+}
+
+export { extractLyrics, formatAnnotations, formatLyrics, getRawLyrics, getDescription, getTranslations, checkSongMatch, normalize, sanitizeHtml }

@@ -4,7 +4,7 @@ type SongData = {
     id: number,
     lyrics: Map<number, string>|null,
     description: string,
-    annotations: Map<string, Annotation>|null,
+    annotations: Map<number, Annotation>|null,
     url: string|null,
     translations: Map<string, number>
 }

@@ -3,11 +3,19 @@ import { Annotation } from "../types/annotation";
 import { checkSongMatch, normalize } from "./parsingFunctions";
 import JSON5 from 'json5'
 
-const proxy = Spicetify.LocalStorage.get("genius-annotations:proxy") ?? config.PROXY;
+function getProxy(){
+    const rawProxy = Spicetify.LocalStorage.get("genius-annotations:proxy") ?? config.PROXY;
+    const proxy = rawProxy.replace(/(\/\?url=|\?url=|\/)$/, "");
+    return proxy;
+}
 
 async function fetchSongHits(name: string, artist: string, signal?: AbortSignal){
+    const fullUrl = new URL(getProxy());
     const query = new URLSearchParams({q: `${artist} ${normalize(name)}`});
-    const fullUrl = proxy + `https://api.genius.com/search?${query.toString()}`
+    const searchUrl = `https://api.genius.com/search?${query.toString()}` 
+
+    fullUrl.searchParams.set("url", searchUrl);
+    fullUrl.searchParams.set("clientVersion", config.VERSION); // Using search param instead of header to avoid cors preflight doubling outgoing requests
     const hits = new Map<number, string>();
 
     try {
@@ -40,8 +48,12 @@ async function fetchSongHits(name: string, artist: string, signal?: AbortSignal)
 }
 
 async function fetchRawAnnotations(id: number, signal?: AbortSignal){
-    const geniusUrl = `?song_id=${id.toString()}&text_format=plain&per_page=50`
-    const fullUrl = proxy + `https://api.genius.com/referents${encodeURIComponent(geniusUrl)}`;
+    const fullUrl = new URL(getProxy());
+    const songUrl = `?song_id=${id.toString()}&text_format=html&per_page=50`
+    const annotationsUrl = `https://api.genius.com/referents${encodeURIComponent(songUrl)}`
+
+    fullUrl.searchParams.set("url", annotationsUrl);
+    fullUrl.searchParams.set("clientVersion", config.VERSION);
     let annotations: Annotation[] = [];
 
     try {
@@ -61,7 +73,8 @@ async function fetchRawAnnotations(id: number, signal?: AbortSignal){
         for (const referent of data.response.referents){
             const annotationID = referent.id;
             const annotationLyric = referent.fragment;
-            const annotationText = referent.annotations[0].body.plain
+            const annotationText = referent.annotations[0].body.html
+
             annotations.push({id: annotationID, lyrics: annotationLyric, text: annotationText});
         }
     } catch (e) {
@@ -72,7 +85,11 @@ async function fetchRawAnnotations(id: number, signal?: AbortSignal){
 }
 
 async function fetchPreloadedState(id: number, signal?: AbortSignal){
-    const fullUrl = proxy + `https://genius.com/songs/${id.toString()}`;
+    const fullUrl = new URL(getProxy());
+    const songUrl = `https://genius.com/songs/${id.toString()}`;
+
+    fullUrl.searchParams.set("url", songUrl);
+    fullUrl.searchParams.set("clientVersion", config.VERSION);
 
     try {
         const response = await fetch(fullUrl, {signal})
