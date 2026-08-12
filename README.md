@@ -4,8 +4,7 @@ Includes a list of available translations, as well as the link to the song page 
 Requires [Spicetify](https://spicetify.app/) installed to use.
 
 ## Main features:
-- Song lyrics
-- Song descriptions
+- Song descriptions & lyrics
 - Annotations on lyrics
 - Lyric translations
 - 1 command install
@@ -36,8 +35,9 @@ Done.
 Use the app by clicking its icon on the top left of Spotify (circled red in this image)  
 <img src="resources/iconLocation.png"/>  
 
-Available translations can be selected from the dropdown at the top of the lyrics page.
-Lyrics with annotations will be highlighted green. Click them to see the annotation.  
+Available translations can be selected from the dropdown at the top of the lyrics page.  
+Lyrics with annotations will be highlighted green.  
+Click them to see the annotation.  
 
 ## Previews
 <img src="resources/previewGif.gif" width="500" height="500"/>  
@@ -47,7 +47,8 @@ Lyrics with annotations will be highlighted green. Click them to see the annotat
 <img src="resources/annotationPreview.png" width="500" height="500" />  
 
 ## Updating
+The app will automatically check for updates on launch, and display "Update Available" next to its name in the menu shown below.  
 Copy and run the powershell command from the app's config panel.  
-The app will automatically check for updates on launch.  
+A changelog is also included.  
 <img src="resources/configLocation.png" width="500"/>  
-<img src="resources/configPreview.png" width="500" height="500">
+<img src="resources/configPreview.png" width="500" height="500">  
